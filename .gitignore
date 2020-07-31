@@ -1,0 +1,9 @@
+node_modules
+*.idea
+ply
+package-lock.json
+docs
+src/model/glb
+src/model/ply
+dist
+.cache
