@@ -1,4 +1,6 @@
-export default {
+import {Settings} from './settings';
+
+const settings: Settings = {
   "background": "#000000",
   "mesh": {
     "castShadow": true,
@@ -30,4 +32,6 @@ export default {
       200
     ]
   }
-}
+};
+
+export default settings;

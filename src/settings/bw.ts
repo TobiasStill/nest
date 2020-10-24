@@ -1,4 +1,6 @@
-export default {
+import {Settings} from './settings';
+
+const settings: Settings = {
   "background": "#ff0000",
   "ambient": {
     "color": "#ffd700"
@@ -38,4 +40,6 @@ export default {
     "shadow_camera_far": 7777,
     "shadow_camera_fov": 7000
   }
-}
+};
+
+export default settings;
