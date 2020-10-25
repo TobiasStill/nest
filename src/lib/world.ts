@@ -1,8 +1,10 @@
 import {LightSettings, Settings} from '../settings/settings';
 import * as THREE from 'three';
-import CameraControls from 'camera-controls';
+//import CameraControls from 'camera-controls';
+import CruiseControls from './CruiseControls';
 
-CameraControls.install({THREE: THREE});
+
+CruiseControls.install({THREE: THREE});
 import Stats from 'stats-js/src/Stats';
 import {PLYLoader} from 'three/examples/jsm/loaders/PLYLoader';
 import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader';
@@ -12,11 +14,13 @@ import {hexEncodeColor, setAmbientLight, setLight} from './helper';
 //import model from '../model/ply/Lucy100k.ply';
 import model from '../model/ply/cube.ply';
 
+const EPS = 1e-5;
+
 export class World {
     private scene: THREE.Scene;
     private mesh: THREE.Mesh;
     private stats: Stats;
-    private controls: CameraControls;
+    private controls: CruiseControls;
     private clock: THREE.Clock;
     private camera: THREE.PerspectiveCamera;
     private renderer: THREE.WebGLRenderer;
@@ -47,6 +51,8 @@ export class World {
 
         this.addSpheres();
 
+        this.addGridHelper();
+
         this.initLights();
 
         this.initControls();
@@ -62,7 +68,7 @@ export class World {
     private initCamera(WIDTH: number, HEIGHT: number) {
         this.camera = new THREE.PerspectiveCamera(45, WIDTH / HEIGHT, 0.1, 100000);
         this.camera.position.set(0, 100, 0);
-        this.camera.lookAt(new THREE.Vector3(0, 0, 0));
+        // this.camera.lookAt(new THREE.Vector3(0, 0, 0));
         this.scene.add(this.camera);
     }
 
@@ -77,7 +83,11 @@ export class World {
     }
 
     private initControls() {
-        this.controls = new CameraControls(this.camera, this.renderer.domElement);
+        this.controls = new CruiseControls(this.camera, this.renderer.domElement);
+        this.controls.azimuthRotateSpeed = -0.3; // negative value to invert rotation direction
+        this.controls.polarRotateSpeed = -0.3; // negative value to invert rotation direction
+        this.controls.truckSpeed = 1 / EPS * 3;
+        this.controls.saveState();
         //this.controls.infinityDolly = true;
     }
 
@@ -121,6 +131,12 @@ export class World {
             this.init(WIDTH, HEIGHT);
             event.preventDefault();
         });
+    }
+
+    private addGridHelper() {
+        const gridHelper = new THREE.GridHelper(50, 50);
+        gridHelper.position.y = -1;
+        this.scene.add(gridHelper);
     }
 
     private addStats() {

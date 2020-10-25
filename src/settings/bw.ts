@@ -1,7 +1,7 @@
 import {Settings} from './settings';
 
 const settings: Settings = {
-  "background": "#ff0000",
+  "background": "#cccccc",
   "ambient": {
     "color": "#ffd700"
   },
