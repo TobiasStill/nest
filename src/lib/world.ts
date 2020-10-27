@@ -3,44 +3,44 @@ import * as THREE from 'three';
 //import CameraControls from 'camera-controls';
 import CruiseControls from './CruiseControls';
 
-
-CruiseControls.install({THREE: THREE});
 import Stats from 'stats-js/src/Stats';
 import {PLYLoader} from 'three/examples/jsm/loaders/PLYLoader';
 import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader';
 import {initManager} from './init-manager';
 import {hexEncodeColor, setAmbientLight, setLight} from './helper';
-//import model from '../model/ply/nest_full_LOD2.ply';
+import CruiseControls2 from './CruiseControls2';
+import model from '../model/ply/nest_full_LOD4.ply';
 //import model from '../model/ply/Lucy100k.ply';
-import model from '../model/ply/cube.ply';
-
-const EPS = 1e-5;
+//import model from '../model/ply/cube.ply';
 
 export class World {
     private scene: THREE.Scene;
     private mesh: THREE.Mesh;
     private stats: Stats;
-    private controls: CruiseControls;
+    private controls: CruiseControls | CruiseControls2;
     private clock: THREE.Clock;
     private camera: THREE.PerspectiveCamera;
     private renderer: THREE.WebGLRenderer;
+    private WIDTH: number;
+    private HEIGHT: number;
+    private frame: number = 0;
 
     constructor(private settings: Settings) {
-        const WIDTH = window.innerWidth,
-            HEIGHT = window.innerHeight;
+        this.WIDTH = window.innerWidth;
+        this.HEIGHT = window.innerHeight;
 
         // Create a renderer and add it to the DOM.
-        this.initRenderer(WIDTH, HEIGHT);
-        this.init(WIDTH, HEIGHT);
+        this.initRenderer();
+        this.init();
     }
 
-    private init(WIDTH: number, HEIGHT: number) {
+    private init() {
         this.clock = new THREE.Clock();
         // Create the scene and set the scene size.
         this.scene = new THREE.Scene();
 
         // Create a camera, zoom it out from the model a bit, and add it to the scene.
-        this.initCamera(WIDTH, HEIGHT);
+        this.initCamera();
 
         this.addStats();
 
@@ -49,9 +49,9 @@ export class World {
 
         this.scene.background = new THREE.Color(this.settings.background);
 
-        this.addSpheres();
+        //this.addSpheres();
 
-        this.addGridHelper();
+        //this.addGridHelper();
 
         this.initLights();
 
@@ -65,16 +65,16 @@ export class World {
     }
 
 
-    private initCamera(WIDTH: number, HEIGHT: number) {
-        this.camera = new THREE.PerspectiveCamera(45, WIDTH / HEIGHT, 0.1, 100000);
-        this.camera.position.set(0, 100, 0);
-        // this.camera.lookAt(new THREE.Vector3(0, 0, 0));
+    private initCamera() {
+        this.camera = new THREE.PerspectiveCamera(45, this.WIDTH / this.HEIGHT, 0.1, 100000);
+        this.camera.position.set(0, 0, 100);
+        this.camera.lookAt(new THREE.Vector3(0, 0, 0));
         this.scene.add(this.camera);
     }
 
-    private initRenderer(WIDTH: number, HEIGHT: number) {
+    private initRenderer() {
         this.renderer = new THREE.WebGLRenderer({antialias: true, powerPreference: 'high-performance'});
-        this.renderer.setSize(WIDTH, HEIGHT);
+        this.renderer.setSize(this.WIDTH, this.HEIGHT);
         this.renderer.setPixelRatio(window.devicePixelRatio);
         this.renderer.domElement.id = 'context';
         this.renderer.shadowMap.enabled = true;
@@ -84,11 +84,7 @@ export class World {
 
     private initControls() {
         this.controls = new CruiseControls(this.camera, this.renderer.domElement);
-        this.controls.azimuthRotateSpeed = -0.3; // negative value to invert rotation direction
-        this.controls.polarRotateSpeed = -0.3; // negative value to invert rotation direction
-        this.controls.truckSpeed = 1 / EPS * 3;
-        this.controls.saveState();
-        //this.controls.infinityDolly = true;
+        //this.controls = new CruiseControls2(this.camera, this.scene, );
     }
 
     private initLights() {
@@ -111,10 +107,10 @@ export class World {
 
     private addResizeListener() {
         window.addEventListener('resize', () => {
-            var WIDTH = window.innerWidth,
-                HEIGHT = window.innerHeight;
-            this.renderer.setSize(WIDTH, HEIGHT);
-            this.camera.aspect = WIDTH / HEIGHT;
+            this.WIDTH = window.innerWidth;
+            this.HEIGHT = window.innerHeight;
+            this.renderer.setSize(this.WIDTH, this.HEIGHT);
+            this.camera.aspect = this.WIDTH / this.HEIGHT;
             this.camera.updateProjectionMatrix();
         });
     }
@@ -126,9 +122,9 @@ export class World {
         });
         this.renderer.domElement.addEventListener('webglcontextrestored', (event) => {
             console.warn('context restored!');
-            var WIDTH = window.innerWidth,
-                HEIGHT = window.innerHeight;
-            this.init(WIDTH, HEIGHT);
+            this.WIDTH = window.innerWidth;
+            this.HEIGHT = window.innerHeight;
+            this.init();
             event.preventDefault();
         });
     }
@@ -178,7 +174,7 @@ export class World {
 
             // Make a sphere (exactly the same as before).
             var geometry = new THREE.SphereGeometry(0.5, 32, 32);
-            var material = new THREE.MeshBasicMaterial({color: 0x000000});
+            var material = new THREE.MeshBasicMaterial({color: 0x00ff00});
             var spheres = new THREE.Mesh(geometry, material);
 
             // This time we give the sphere random x and y positions between -500 and 500
@@ -198,13 +194,13 @@ export class World {
 
     // Renders the scene and updates the render as needed.
     private render() {
-        this.stats.begin();
-        const delta = this.clock.getDelta();
-        const hasControlsUpdated = this.controls.update(delta);
-        requestAnimationFrame(this.render.bind(this));
-        if (hasControlsUpdated) {
+        this.frame && cancelAnimationFrame(this.frame);
+        this.frame = requestAnimationFrame(this.render.bind(this));
+        const updated = this.controls.update(this.clock.getDelta());
+        if (updated) {
+            //console.log('updated');
             this.renderer.render(this.scene, this.camera);
+            this.stats.update();
         }
-        this.stats.end();
     }
 }

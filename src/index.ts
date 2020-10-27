@@ -1,7 +1,7 @@
 
 import {Settings} from './settings/settings';
 import {World} from './lib/world';
-import settings from './settings/bw';
+import settings from './settings/pink-orange';
 
 
 // Sets up the scene.
