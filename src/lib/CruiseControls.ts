@@ -1,7 +1,7 @@
 import {
     MathUtils,
     PerspectiveCamera,
-    Quaternion,
+    Quaternion, Vector2,
     Vector3
 } from 'three';
 
@@ -34,12 +34,14 @@ export default class CruiseControls {
     public dragSpeed = 0.003;
     private moveState: MoveState;
     private tmpQuaternion: Quaternion;
-    private moveVector: Vector3;
-    private travelVector: Vector3;
-    private rotationVector: Vector3;
-    private center: Vector3;
-    private dragVector: Vector3;
-    private dragStart: { clientX: number, clientY: number } | undefined;
+    private moveVector = new Vector3();
+    private travelVector = new Vector3();
+    private rotationVector = new Vector3();
+    private center = new Vector3();
+    private dragVector = new Vector3();
+    private pinchStart = new Vector2();
+    private pinchEnd = new Vector2();
+    private dragPointerStart: { x: number, y: number } | undefined;
     private dragState: DragState | undefined;
     private distance: number;
     private contextmenu = (event: Event) => event.preventDefault();
@@ -62,17 +64,17 @@ export default class CruiseControls {
             rollLeft: 0,
             rollRight: 0
         };
-        this.moveVector = new Vector3(0, 0, 0);
-        this.travelVector = new Vector3(0, 0, 0);
-        this.rotationVector = new Vector3(0, 0, 0);
-        this.dragVector = new Vector3(0, 0, 0);
-        this.center = new Vector3(0, 0, 0);
-        this.mousemove = this.mousemove.bind(this);
-        this.mousedown = this.mousedown.bind(this);
-        this.mouseup = this.mouseup.bind(this);
-        this.mousewheel = this.mousewheel.bind(this);
-        this.keydown = this.keydown.bind(this);
-        this.keyup = this.keyup.bind(this);
+        this.dragState = {up: 0, right: 0};
+        this.onMouseMove = this.onMouseMove.bind(this);
+        this.onMouseDown = this.onMouseDown.bind(this);
+        this.onMouseUp = this.onMouseUp.bind(this);
+        this.onMouseLeave = this.onMouseLeave.bind(this);
+        this.onMouseWheel = this.onMouseWheel.bind(this);
+        this.onKeyDown = this.onKeyDown.bind(this);
+        this.onKeyUp = this.onKeyUp.bind(this);
+        this.onTouchMove = this.onTouchMove.bind(this);
+        this.onTouchStart = this.onTouchStart.bind(this);
+        this.onTouchEnd = this.onTouchEnd.bind(this);
         this.register();
     }
 
@@ -145,14 +147,11 @@ export default class CruiseControls {
         const horizon = 10000;
         const distance = MathUtils.clamp(this.camera.position.sub(this.center).length(), 1, horizon);
         const factor = this.movementSpeed * Math.sin(distance * (Math.PI / 2 / horizon));
-        //console.log(`distance: ${distance}`);
         //console.log(`factor: ${factor}`);
         return factor;
     }
 
-    private dragging(event: MouseEvent) {
-        const deltaX = this.dragStart.clientX - event.clientX;
-        const deltaY = this.dragStart.clientY - event.clientY;
+    private dragging(deltaX: number, deltaY: number) {
 
         this.dragState.right = deltaX;
         this.dragState.up = deltaY;
@@ -161,20 +160,15 @@ export default class CruiseControls {
         //console.log(`dragging: dragState.up= ${this.dragState.up} dragState.right= ${this.dragState.right}`);
 
         this.updateDragVector();
-        this.startDragging(event);
-    }
-
-    private startDragging(event: MouseEvent) {
-        this.dragStart = {clientX: event.clientX, clientY: event.clientY};
-        this.dragState = {up: 0, right: 0};
     }
 
     private endDragging() {
-        this.dragStart = this.dragState = undefined;
+        this.dragPointerStart = undefined;
+        this.dragState = {up: 0, right: 0};
     }
 
     private isDragging() {
-        return !!this.dragStart && (!!this.dragState || (!this.dragState.up && !this.dragState.right));
+        return this.dragState.up || this.dragState.right;
     }
 
     private updateMovementVector() {
@@ -218,14 +212,51 @@ export default class CruiseControls {
         };
     };
 
+    private onTouchMove(event: TouchEvent) {
+        event.preventDefault();
+        event.stopPropagation();
+        if (event.touches.length == 1) {
+            if (this.dragPointerStart) {
+                const pageX = event.touches[0].pageX;
+                const pageY = event.touches[0].pageY;
+                const deltaX = this.dragPointerStart.x - pageX;
+                const deltaY = this.dragPointerStart.y - pageY;
+                this.dragging(deltaX, deltaY);
+                this.dragPointerStart = {x: pageX, y: pageY};
+                //console.log(`onTouchMove set dragPointerStart x=${this.dragPointerStart.x}, y=${this.dragPointerStart.y}`);
+            }
 
-    private mousewheel(event: WheelEvent) {
-        const deltaYFactor = isMac ? -1 : -3;
-        this.distance = (event.deltaMode === 1) ? event.deltaY / deltaYFactor : event.deltaY / (deltaYFactor * 10);
-        this.updateTravelVector();
+        } else {
+            const dx = (event.touches[0].pageX - event.touches[1].pageX);
+            const dy = (event.touches[0].pageY - event.touches[1].pageY);
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            this.pinchEnd.set(0, distance);
+            this.distance = MathUtils.clamp(this.pinchStart.y - this.pinchEnd.y, -10, 10);
+            this.pinchStart.copy(this.pinchEnd);
+            this.updateTravelVector();
+        }
     }
 
-    private keydown(event: KeyboardEvent) {
+    private onTouchStart(event: TouchEvent) {
+        event.preventDefault();
+        event.stopPropagation();
+        if (event.touches.length == 1) {
+            const pageX = event.touches[0].pageX;
+            const pageY = event.touches[0].pageY;
+            this.dragPointerStart = {x: pageX, y: pageY};
+            //console.log(`onTouchStart set dragPointerStart x=${this.dragPointerStart.x}, y=${this.dragPointerStart.y}`);
+        }
+    };
+
+    private onTouchEnd(event: TouchEvent) {
+        event.preventDefault();
+        event.stopPropagation();
+        if (event.touches.length == 1) {
+            this.endDragging();
+        }
+    };
+
+    private onKeyDown(event: KeyboardEvent) {
 
         switch (event.keyCode) {
 
@@ -250,7 +281,7 @@ export default class CruiseControls {
 
     };
 
-    private keyup(event: KeyboardEvent) {
+    private onKeyUp(event: KeyboardEvent) {
 
         switch (event.keyCode) {
 
@@ -278,54 +309,78 @@ export default class CruiseControls {
 
     };
 
-    private mousedown(event) {
+    private onMouseDown(event: MouseEvent) {
         event.preventDefault();
         event.stopPropagation();
-        this.startDragging(event);
+        this.dragPointerStart = {x: event.clientX, y: event.clientY};
+        //console.log(`onMouseDown: set dragPointerStart x=${this.dragPointerStart.x}, y=${this.dragPointerStart.y}`);
     };
 
-    private mousemove(event: MouseEvent) {
+    private onMouseMove(event: MouseEvent) {
         event.preventDefault();
         event.stopPropagation();
-        if (this.isDragging()) {
-            this.dragging(event);
+        if (this.dragPointerStart) {
+            const deltaX = this.dragPointerStart.x - event.clientX;
+            const deltaY = this.dragPointerStart.y - event.clientY;
+            //console.log(`onMouseMove: client x=${event.clientX}, y=${event.clientY}`);
+            this.dragging(deltaX, deltaY);
+            this.dragPointerStart = {x: event.clientX, y: event.clientY};
+            //console.log(`onMouseMove: set dragPointerStart x=${this.dragPointerStart.x}, y=${this.dragPointerStart.y}`);
         }
     };
 
-    private mouseup(event) {
+    private onMouseUp(event: MouseEvent) {
         event.preventDefault();
         event.stopPropagation();
+        //console.log(`onMouseUp: client x=${event.clientX}, y=${event.clientY}`);
         this.endDragging();
+    };
+
+    private onMouseLeave(event: MouseEvent) {
+        this.onMouseUp(event);
+    };
+
+    private onMouseWheel(event: WheelEvent) {
+        event.preventDefault();
+        event.stopPropagation();
+        const deltaYFactor = isMac ? -1 : -3;
+        this.distance = (event.deltaMode === 1) ? event.deltaY / deltaYFactor : event.deltaY / (deltaYFactor * 10);
+        this.updateTravelVector();
+    }
+
+    private register() {
+
+        this.domElement.addEventListener('contextmenu', this.contextmenu, false);
+        this.domElement.addEventListener('mousedown', this.onMouseDown, false);
+        this.domElement.addEventListener('mousemove', this.onMouseMove, false);
+        this.domElement.addEventListener('mouseup', this.onMouseUp, false);
+        this.domElement.addEventListener('mouseleave', this.onMouseLeave, false);
+        this.domElement.addEventListener('mousewheel', this.onMouseWheel, false);
+
+        this.domElement.addEventListener('touchstart', this.onTouchStart, false);
+        this.domElement.addEventListener('touchend', this.onTouchEnd, false);
+        this.domElement.addEventListener('touchmove', this.onTouchMove, false);
+
+        window.addEventListener('keydown', this.onKeyDown, false);
+        window.addEventListener('keyup', this.onKeyUp, false);
+
     };
 
     private dispose() {
 
         this.domElement.removeEventListener('contextmenu', this.contextmenu, false);
-        this.domElement.removeEventListener('mousedown', this.mousedown, false);
-        this.domElement.removeEventListener('mousemove', this.mousemove, false);
-        this.domElement.removeEventListener('mouseup', this.mouseup, false);
-        this.domElement.removeEventListener('mouseleave', this.mouseup, false);
-        this.domElement.removeEventListener('mousewheel', this.mousewheel, false);
+        this.domElement.removeEventListener('mousedown', this.onMouseDown, false);
+        this.domElement.removeEventListener('mousemove', this.onMouseMove, false);
+        this.domElement.removeEventListener('mouseup', this.onMouseUp, false);
+        this.domElement.removeEventListener('mouseleave', this.onMouseLeave, false);
+        this.domElement.removeEventListener('mousewheel', this.onMouseWheel, false);
 
-        window.removeEventListener('keydown', this.keydown, false);
-        window.removeEventListener('keyup', this.keyup, false);
+        this.domElement.removeEventListener('touchstart', this.onTouchStart, false);
+        this.domElement.removeEventListener('touchend', this.onTouchEnd, false);
+        this.domElement.removeEventListener('touchmove', this.onTouchMove, false);
 
-    };
-
-    private register() {
-
-        this.domElement.addEventListener('contextmenu', this.contextmenu, false);
-        this.domElement.addEventListener('mousedown', this.mousedown, false);
-        this.domElement.addEventListener('mousemove', this.mousemove, false);
-        this.domElement.addEventListener('mouseup', this.mouseup, false);
-        this.domElement.addEventListener('mouseleave', this.mouseup, false);
-        this.domElement.addEventListener('mousewheel', this.mousewheel, false);
-
-        window.addEventListener('keydown', this.keydown, false);
-        window.addEventListener('keyup', this.keyup, false);
-
-        this.updateMovementVector();
-        this.updateRotationVector();
+        window.removeEventListener('keydown', this.onKeyDown, false);
+        window.removeEventListener('keyup', this.onKeyUp, false);
 
     };
 };

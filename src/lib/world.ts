@@ -60,8 +60,8 @@ export class World {
         this.loadPLY(model, () => {
         }, () => {
         });
-
         this.render();
+        this.animate();
     }
 
 
@@ -112,20 +112,19 @@ export class World {
             this.renderer.setSize(this.WIDTH, this.HEIGHT);
             this.camera.aspect = this.WIDTH / this.HEIGHT;
             this.camera.updateProjectionMatrix();
+            this.render();
         });
     }
 
     private addAddContextLostListener() {
         this.renderer.domElement.addEventListener('webglcontextlost', (event) => {
             console.warn('context lost!');
-            event.preventDefault();
         });
         this.renderer.domElement.addEventListener('webglcontextrestored', (event) => {
             console.warn('context restored!');
             this.WIDTH = window.innerWidth;
             this.HEIGHT = window.innerHeight;
             this.init();
-            event.preventDefault();
         });
     }
 
@@ -150,6 +149,7 @@ export class World {
             this.mesh.castShadow = this.settings.mesh.castShadow;
             this.mesh.receiveShadow = this.settings.mesh.receiveShadow;
             this.scene.add(this.mesh);
+            this.render();
             resolve();
         }, reject);
     }
@@ -193,14 +193,18 @@ export class World {
     }
 
     // Renders the scene and updates the render as needed.
-    private render() {
+    private animate() {
         this.frame && cancelAnimationFrame(this.frame);
-        this.frame = requestAnimationFrame(this.render.bind(this));
+        this.frame = requestAnimationFrame(this.animate.bind(this));
         const updated = this.controls.update(this.clock.getDelta());
         if (updated) {
             //console.log('updated');
-            this.renderer.render(this.scene, this.camera);
+            this.render();
             this.stats.update();
         }
+    }
+
+    private render() {
+        this.renderer.render(this.scene, this.camera);
     }
 }
