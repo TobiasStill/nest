@@ -9,6 +9,7 @@ import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader';
 import {hexEncodeColor, setAmbientLight, setLight} from './helper';
 import CruiseControls2 from './CruiseControls2';
 import Loader from './loader';
+import {hideAlert, showAlert} from './alerts';
 import model from '../model/ply/nest_full_LOD4.ply';
 // const model = require('../model/ply/nest_full_LOD4.ply');
 //import model from '../model/ply/Lucy100k.ply';
@@ -119,6 +120,10 @@ export class World {
     private addAddContextLostListener() {
         this.renderer.domElement.addEventListener('webglcontextlost', (event) => {
             console.warn('context lost!');
+            showAlert(`
+                    <p><strong>WebGl Context Lost!</strong></p>
+                    <p>Please wait for the application to recover or restart Browser.</p>
+            `);
             event.preventDefault();
         });
         this.renderer.domElement.addEventListener('webglcontextrestored', (event) => {
@@ -126,6 +131,7 @@ export class World {
             this.WIDTH = window.innerWidth;
             this.HEIGHT = window.innerHeight;
             this.init();
+            hideAlert();
             event.preventDefault();
         });
     }
@@ -144,7 +150,9 @@ export class World {
 
     private plyOnLoad(resolve: () => {}) {
         return (geometry) => {
-            var material = new THREE.MeshLambertMaterial({color: this.settings.mesh.color});
+            var material = new THREE.MeshLambertMaterial({
+                color: this.settings.mesh.color,
+            });
             this.mesh = new THREE.Mesh(geometry, material);
             this.mesh.matrixAutoUpdate = false;
             this.mesh.castShadow = this.settings.mesh.castShadow;
