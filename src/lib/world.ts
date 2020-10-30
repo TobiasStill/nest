@@ -6,10 +6,11 @@ import CruiseControls from './CruiseControls';
 import Stats from 'stats-js/src/Stats';
 import {PLYLoader} from 'three/examples/jsm/loaders/PLYLoader';
 import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader';
-import {initManager} from './init-manager';
 import {hexEncodeColor, setAmbientLight, setLight} from './helper';
 import CruiseControls2 from './CruiseControls2';
+import Loader from './loader';
 import model from '../model/ply/nest_full_LOD4.ply';
+// const model = require('../model/ply/nest_full_LOD4.ply');
 //import model from '../model/ply/Lucy100k.ply';
 //import model from '../model/ply/cube.ply';
 
@@ -17,7 +18,7 @@ export class World {
     private scene: THREE.Scene;
     private mesh: THREE.Mesh;
     private stats: Stats;
-    private controls: CruiseControls | CruiseControls2;
+    private controls: CruiseControls;
     private clock: THREE.Clock;
     private camera: THREE.PerspectiveCamera;
     private renderer: THREE.WebGLRenderer;
@@ -47,8 +48,6 @@ export class World {
         // add event listener on resize
         this.addResizeListener();
 
-        this.scene.background = new THREE.Color(this.settings.background);
-
         //this.addSpheres();
 
         //this.addGridHelper();
@@ -57,11 +56,12 @@ export class World {
 
         this.initControls();
 
-        this.loadPLY(model, () => {
+        this.loadPly(model, () => {
+            this.scene.background = new THREE.Color(this.settings.background);
+            this.render();
+            this.animate();
         }, () => {
         });
-        this.render();
-        this.animate();
     }
 
 
@@ -73,7 +73,7 @@ export class World {
     }
 
     private initRenderer() {
-        this.renderer = new THREE.WebGLRenderer({antialias: true, powerPreference: 'high-performance'});
+        this.renderer = new THREE.WebGLRenderer({alpha: true, antialias: true, powerPreference: 'high-performance'});
         this.renderer.setSize(this.WIDTH, this.HEIGHT);
         this.renderer.setPixelRatio(window.devicePixelRatio);
         this.renderer.domElement.id = 'context';
@@ -119,12 +119,14 @@ export class World {
     private addAddContextLostListener() {
         this.renderer.domElement.addEventListener('webglcontextlost', (event) => {
             console.warn('context lost!');
+            event.preventDefault();
         });
         this.renderer.domElement.addEventListener('webglcontextrestored', (event) => {
             console.warn('context restored!');
             this.WIDTH = window.innerWidth;
             this.HEIGHT = window.innerHeight;
             this.init();
+            event.preventDefault();
         });
     }
 
@@ -140,10 +142,9 @@ export class World {
         document.body.appendChild(this.stats.dom);
     }
 
-    private loadPLY(model: string, resolve, reject) {
-        var loader = new PLYLoader(initManager());
-        loader.load(model, (geometry) => {
-            var material = new THREE.MeshStandardMaterial({color: this.settings.mesh.color});
+    private plyOnLoad(resolve: () => {}) {
+        return (geometry) => {
+            var material = new THREE.MeshLambertMaterial({color: this.settings.mesh.color});
             this.mesh = new THREE.Mesh(geometry, material);
             this.mesh.matrixAutoUpdate = false;
             this.mesh.castShadow = this.settings.mesh.castShadow;
@@ -151,12 +152,11 @@ export class World {
             this.scene.add(this.mesh);
             this.render();
             resolve();
-        }, reject);
-    }
+        }
+    };
 
-    private loadGLTF(model: string, resolve, reject) {
-        var loader = new GLTFLoader(initManager());
-        loader.load(model, (gltf) => {
+    private gltfOnLoad(resolve: () => {}) {
+        return (gltf) => {
             this.mesh = <THREE.Mesh><unknown>gltf.scene; // Todo
             this.mesh.matrixAutoUpdate = false;
             this.mesh.castShadow = this.settings.mesh.castShadow;
@@ -164,7 +164,17 @@ export class World {
             (<THREE.MeshLambertMaterial>this.mesh.material).color.set(hexEncodeColor(this.settings.mesh.color)); //Todo
             this.scene.add(this.mesh);
             resolve();
-        }, reject);
+        }
+    };
+
+    private loadPly(model: string, resolve, reject) {
+        var loader = new PLYLoader(Loader.initLoadingManager());
+        loader.load(model, this.plyOnLoad(resolve), Loader.onProgress, reject);
+    }
+
+    private loadGltf(model: string, resolve, reject) {
+        var loader = new GLTFLoader(Loader.initLoadingManager());
+        loader.load(model, this.gltfOnLoad(resolve), Loader.onProgress, reject);
     }
 
     private addSpheres() {
