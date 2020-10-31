@@ -27,7 +27,7 @@ export class World {
     private HEIGHT: number;
     private frame: number = 0;
 
-    constructor(private settings: Settings) {
+    constructor(private settings: Settings, private onModelLoad: () => void, private onModelReject: () => void) {
         this.WIDTH = window.innerWidth;
         this.HEIGHT = window.innerHeight;
 
@@ -44,7 +44,7 @@ export class World {
         // Create a camera, zoom it out from the model a bit, and add it to the scene.
         this.initCamera();
 
-        this.addStats();
+        // this.addStats();
 
         // add event listener on resize
         this.addResizeListener();
@@ -61,8 +61,8 @@ export class World {
             this.scene.background = new THREE.Color(this.settings.background);
             this.render();
             this.animate();
-        }, () => {
-        });
+            this.onModelLoad();
+        }, this.onModelReject);
     }
 
 
@@ -145,7 +145,7 @@ export class World {
     private addStats() {
         this.stats = new Stats();
         this.stats.showPanel(0);
-        document.body.appendChild(this.stats.dom);
+        document.getElementById('stats').appendChild(this.stats.dom);
     }
 
     private plyOnLoad(resolve: () => {}) {

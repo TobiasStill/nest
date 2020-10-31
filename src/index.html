@@ -5,18 +5,107 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 </head>
-<body>
+<body style="margin: 0; overflow: hidden">
 <div id="background">
-    <img src="<%=require('./assets/startbild.jpg').default%>" style="min-width: 100%; min-height: 100%;" />
+    <img src="<%=require('./assets/startbild.jpg').default%>" style="min-width: 100%; min-height: 100%;"/>
 </div>
 <div class="loader" id="loader">
     <span class="spinner">
     </span>
     <span class="percent"></span>
 </div>
+<div id="stats"></div>
+<div id="menu" class="menu">
+    <button class="opener"></button>
+    <nav style="display: none">
+        <ul>
+            <li id="navi" data-content-id="navi_content">
+                <button>navi</button>
+            </li>
+            <li id="info" data-content-id="info_content">
+                <button>info</button>
+            </li>
+            <li id="technik" data-content-id="technik_content">
+                <button>technik</button>
+            </li>
+            <li id="produktion" data-content-id="produktion_content">
+                <button>produktion</button>
+            </li>
+        </ul>
+    </nav>
+</div>
+<div id="flyout" class="flyout">
+    <div class="content-pane">
+        <button class="closer" onclick="document.getElementById('flyout').style.display = 'none'">X</button>
+        <div class="content"></div>
+    </div>
+</div>
 <div id="alerts" class="popup">
-    <button class="closer" onclick="document.getElementById('alerts').style.display = 'none'">X</button>
-    <div class="content"/>
+    <div class="content-pane">
+        <button class="closer" onclick="document.getElementById('alerts').style.display = 'none'">X</button>
+        <div class="content"></div>
+    </div>
+</div>
+<div id="flyout-content" style="display: none">
+    <div id="navi_content">
+        <h2>Navigation</h2>
+        <p>Maus:</p>
+        <ul>
+            <li>Mausrad: Vorwärts / rückwärts</li>
+            <li>Ziehen (Mustaste gedrückt): Schwenk, horizontal / vertikal</li>
+        </ul>
+        <p>Touch:</p>
+        <ul>
+            <li>Zwei-Finger Zoom: Vorwärts / rückwärts</li>
+            <li>Berühren und ziehen: Schwenk, horizontal / vertikal</li>
+        </ul>
+        <p>Tastatur:</p>
+        <ul>
+            <li>[W]: Vorwärts</li>
+            <li>[S]: Rückwärts</li>
+            <li>[A]: Links</li>
+            <li>[D]: Rechts</li>
+        </ul>
+    </div>
+    <div id="info_content">
+        <h2>Hintergrund und Geschichte</h2>
+        <p>WebGL basiert auf OpenGL ES (Version 2.0) im Zusammenspiel mit der Programmiersprache JavaScript, die von der
+        Khronos Group und Mozilla als lizenzfreier Standard entwickelt wird. Die Arbeiten an dem Projekt wurden im April
+        2009 begonnen.[3] Im Mai 2010 wurde bekannt gegeben, dass der Webbrowser Google Chrome den Standard ebenfalls
+            unterstützen wird.[4]</p>
+
+        <p>Erste Implementierungen von WebGL wurden in den Rendering-Engines WebKit und Gecko realisiert. Zudem haben sich
+        bereits seit August 2009 die IT-Unternehmen AMD, Ericsson, Nvidia und Opera an der Entwicklung des Projektes
+            beteiligt.[5][6]</p>
+
+        <p>Am 3. März 2011 wurde die erste Version der WebGL-Spezifikation auf der Game Developers Conference in San
+        Francisco freigegeben.[7][8][9] Im März 2011 wurde WebGL von Googles Webbrowser Chrome und Mozillas Firefox
+            unterstützt und ansonsten in Browser-Vorabversionen von Apple Safari und Opera standardmäßig aktiviert.[2][8]</p>
+
+        <p>Im November 2011 wurde das von Google im März 2011 vorgestellte Projekt Angle (was ausgeschrieben für Almost
+        Native Graphics Layer Engine steht) für OpenGL ES Version 2.0 zertifiziert, womit es möglich wird,
+        plattformübergreifende Anwendungen mit WebGL-Unterstützung unter anderem für die drei bekanntesten
+            Betriebssystemplattformen – Windows, Mac und Linux – zu entwickeln.[10][11][12]</p>
+
+        <p>WebGL 2 wurde abgeleitet von OpenGL ES 3.0.[13] Aktuell wird diese Stufe neu ab Firefox 51, Chrome 56, Opera 43
+            implementiert.[14]</p>
+
+        <h2>Erstellung von Inhalten</h2>
+        <p>Programme lassen sich in reinem Code schreiben. Grafiker können Inhalte auch mit Softwarewerkzeugen wie Blender,
+        CopperCube oder Maya erstellen, mit WebGL für den Browser konfigurieren und weiterverarbeiten. Die 3D-Szenen
+        werden dann nach WebGL exportiert. Dies ist beispielsweise mit Inka3D möglich, einem WebGL-Exportmodul für
+        Maya.[15] Blend4Web ist ein Framework, das die 3D-Grafiksoftware Blender erweitert, um die dort erstellten
+            3D-Inhalte auf Webseiten auszugeben.[16] Das freie Magnum basiert auf C++ und gibt auch WebGL 2.0 aus.[17]</p>
+
+        <p>Verge3D ermöglicht es den Anwendern, interaktive Inhalte in den gängigen 3D-Modellierungstools Autodesk 3ds Max
+            und Blender zu bearbeiten und für die Anzeige in einem Webbrowser zu konvertieren.</p>
+
+        <p>Für Entwickler existieren mehrere umfassende, in der Programmiersprache JavaScript implementierte, freie und
+            kommerzielle 3D-Frameworks, beispielsweise Three.js und A-Frame.[18][19]</p>
+
+    </div>
+    <div id="technik_content"></div>
+    <div id="produktion_content"></div>
 </div>
 </body>
 </html>
