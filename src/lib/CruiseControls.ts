@@ -4,6 +4,7 @@ import {
     Quaternion, Vector2,
     Vector3
 } from 'three';
+import {Events} from './Events';
 
 interface MoveState {
     up: number,
@@ -25,11 +26,15 @@ interface DragState {
     right: number,
 }
 
-const isMac = /Mac/.test(navigator.platform);
+interface SpeedCurve{
+    threshold: number;
+    horizon: number;
+    throttle: number;
+}
 
 export default class CruiseControls {
 
-    public movementSpeed = 10;
+    public speedSettings: SpeedCurve = {threshold: 5, horizon: 1000, throttle: 5};
     public rollSpeed = 0.02;
     public dragSpeed = 0.003;
     private moveState: MoveState;
@@ -87,7 +92,7 @@ export default class CruiseControls {
         if (!(this.moveVector.x || this.moveVector.y || this.moveVector.z)) {
             return false;
         }
-        var moveMult = delta * 100 * this.getSpeedFactor();
+        var moveMult = delta * 100 * this.getSpeedCurve();
         //console.log(`delta: ${delta * 100}`);
 
         this.camera.translateX(this.moveVector.x * moveMult);
@@ -133,7 +138,7 @@ export default class CruiseControls {
             return false;
         }
         //console.log(`traveldistance: ${this.distance}`);
-        var moveMult = Math.abs(this.distance) * this.getSpeedFactor();
+        var moveMult = Math.abs(this.distance) * this.getSpeedCurve();
         this.distance = 0;
 
         this.camera.translateX(this.travelVector.x * moveMult);
@@ -143,10 +148,10 @@ export default class CruiseControls {
         return true;
     };
 
-    private getSpeedFactor() {
-        const horizon = 10000;
-        const distance = MathUtils.clamp(this.camera.position.sub(this.center).length(), 1, horizon);
-        const factor = this.movementSpeed * Math.sin(distance * (Math.PI / 2 / horizon));
+    private getSpeedCurve() {
+        const {horizon, threshold, throttle} = this.speedSettings;
+        const distance = MathUtils.clamp(this.camera.position.sub(this.center).length(), threshold, horizon);
+        const factor = throttle * Math.sin(distance * (Math.PI / 2 / horizon));
         //console.log(`factor: ${factor}`);
         return factor;
     }
@@ -183,26 +188,20 @@ export default class CruiseControls {
 
     private updateTravelVector() {
         this.travelVector.z = (this.distance * -1);
-
-        //console.log('move:', [this.travelVector.x, this.travelVector.y, this.travelVector.z]);
-
+        //console.log(`updateTravelVector: distance = ${this.distance}`);
     };
 
     private updateDragVector() {
         this.dragVector.x = (this.dragSpeed * -this.dragState.up);
         this.dragVector.y = (this.dragSpeed * -this.dragState.right);
-
         //console.log('dragRotation:', [this.dragVector.x, this.dragVector.y, this.dragVector.z]);
-
     };
 
     private updateRotationVector() {
         this.rotationVector.x = (-this.moveState.pitchDown + this.moveState.pitchUp);
         this.rotationVector.y = (-this.moveState.yawRight + this.moveState.yawLeft);
         this.rotationVector.z = (-this.moveState.rollRight + this.moveState.rollLeft);
-
         //console.log('rotate:', [this.rotationVector.x, this.rotationVector.y, this.rotationVector.z]);
-
     };
 
     private getContainerDimensions() {
@@ -215,23 +214,24 @@ export default class CruiseControls {
     private onTouchMove(event: TouchEvent) {
         event.preventDefault();
         event.stopPropagation();
-        if (event.touches.length == 1) {
+        if (!Events.Touch.isMultiTouch(event)) {
             if (this.dragPointerStart) {
-                const pageX = event.touches[0].pageX;
-                const pageY = event.touches[0].pageY;
-                const deltaX = this.dragPointerStart.x - pageX;
-                const deltaY = this.dragPointerStart.y - pageY;
+                const {x, y} = Events.Touch.getPosition(Events.Touch.getTouch(event, 0));
+                const deltaX = MathUtils.clamp(this.dragPointerStart.x - x, -30, 30);
+                const deltaY = MathUtils.clamp(this.dragPointerStart.y - y, -30, 30);
                 this.dragging(deltaX, deltaY);
-                this.dragPointerStart = {x: pageX, y: pageY};
+                this.dragPointerStart = {x, y};
                 //console.log(`onTouchMove set dragPointerStart x=${this.dragPointerStart.x}, y=${this.dragPointerStart.y}`);
             }
 
         } else {
-            const dx = (event.touches[0].pageX - event.touches[1].pageX);
-            const dy = (event.touches[0].pageY - event.touches[1].pageY);
+            const pos1 = Events.Touch.getPosition(Events.Touch.getTouch(event, 0));
+            const pos2 = Events.Touch.getPosition(Events.Touch.getTouch(event, 1));
+            const dx = (pos1.x - pos2.x);
+            const dy = (pos1.y - pos2.y);
             const distance = Math.sqrt(dx * dx + dy * dy);
             this.pinchEnd.set(0, distance);
-            this.distance = MathUtils.clamp(this.pinchStart.y - this.pinchEnd.y, -10, 10);
+            this.distance = (this.pinchStart.y - this.pinchEnd.y > 0)? 3: -3;
             this.pinchStart.copy(this.pinchEnd);
             this.updateTravelVector();
         }
@@ -240,10 +240,8 @@ export default class CruiseControls {
     private onTouchStart(event: TouchEvent) {
         event.preventDefault();
         event.stopPropagation();
-        if (event.touches.length == 1) {
-            const pageX = event.touches[0].pageX;
-            const pageY = event.touches[0].pageY;
-            this.dragPointerStart = {x: pageX, y: pageY};
+        if (!Events.Touch.isMultiTouch(event)) {
+            this.dragPointerStart = Events.Touch.getPosition(Events.Touch.getTouch(event, 0));
             //console.log(`onTouchStart set dragPointerStart x=${this.dragPointerStart.x}, y=${this.dragPointerStart.y}`);
         }
     };
@@ -251,7 +249,7 @@ export default class CruiseControls {
     private onTouchEnd(event: TouchEvent) {
         event.preventDefault();
         event.stopPropagation();
-        if (event.touches.length == 1) {
+        if (!Events.Touch.isMultiTouch(event)) {
             this.endDragging();
         }
     };
@@ -312,7 +310,7 @@ export default class CruiseControls {
     private onMouseDown(event: MouseEvent) {
         event.preventDefault();
         event.stopPropagation();
-        this.dragPointerStart = {x: event.clientX, y: event.clientY};
+        this.dragPointerStart = Events.Pointer.getPosition(event);
         //console.log(`onMouseDown: set dragPointerStart x=${this.dragPointerStart.x}, y=${this.dragPointerStart.y}`);
     };
 
@@ -320,12 +318,12 @@ export default class CruiseControls {
         event.preventDefault();
         event.stopPropagation();
         if (this.dragPointerStart) {
-            const deltaX = this.dragPointerStart.x - event.clientX;
-            const deltaY = this.dragPointerStart.y - event.clientY;
-            //console.log(`onMouseMove: client x=${event.clientX}, y=${event.clientY}`);
+            const position = Events.Pointer.getPosition(event);
+            const deltaX = MathUtils.clamp(this.dragPointerStart.x - position.x, -30, 30);
+            const deltaY = MathUtils.clamp(this.dragPointerStart.y - position.y, -30, 30);
+            console.log(`onMouseMove: position x=${position.x}, y=${position.y}`);
             this.dragging(deltaX, deltaY);
-            this.dragPointerStart = {x: event.clientX, y: event.clientY};
-            //console.log(`onMouseMove: set dragPointerStart x=${this.dragPointerStart.x}, y=${this.dragPointerStart.y}`);
+            this.dragPointerStart = position;
         }
     };
 
@@ -343,8 +341,7 @@ export default class CruiseControls {
     private onMouseWheel(event: WheelEvent) {
         event.preventDefault();
         event.stopPropagation();
-        const deltaYFactor = isMac ? -1 : -3;
-        this.distance = (event.deltaMode === 1) ? event.deltaY / deltaYFactor : event.deltaY / (deltaYFactor * 10);
+        this.distance = Events.MouseWheel.getTravelDistance(event).distance / 4;
         this.updateTravelVector();
     }
 
@@ -355,7 +352,7 @@ export default class CruiseControls {
         this.domElement.addEventListener('mousemove', this.onMouseMove, false);
         this.domElement.addEventListener('mouseup', this.onMouseUp, false);
         this.domElement.addEventListener('mouseleave', this.onMouseLeave, false);
-        this.domElement.addEventListener('mousewheel', this.onMouseWheel, false);
+        this.domElement.addEventListener(Events.MouseWheel.name, this.onMouseWheel, false);
 
         this.domElement.addEventListener('touchstart', this.onTouchStart, false);
         this.domElement.addEventListener('touchend', this.onTouchEnd, false);
@@ -373,7 +370,7 @@ export default class CruiseControls {
         this.domElement.removeEventListener('mousemove', this.onMouseMove, false);
         this.domElement.removeEventListener('mouseup', this.onMouseUp, false);
         this.domElement.removeEventListener('mouseleave', this.onMouseLeave, false);
-        this.domElement.removeEventListener('mousewheel', this.onMouseWheel, false);
+        this.domElement.removeEventListener(Events.MouseWheel.name, this.onMouseWheel, false);
 
         this.domElement.removeEventListener('touchstart', this.onTouchStart, false);
         this.domElement.removeEventListener('touchend', this.onTouchEnd, false);
