@@ -27,6 +27,9 @@ h1, h2, h3, h4 {
 }
 
 #background img {
+    position: absolute;
+    top: 0;
+    right: 0;
     min-width: 100%;
     min-height: 100%;
 }
@@ -43,6 +46,10 @@ h1, h2, h3, h4 {
 #stats > div {
     right: 0 !important;
     left: auto !important;
+}
+
+.error {
+    color: red;
 }
 
 .loader {
@@ -172,13 +179,14 @@ h1, h2, h3, h4 {
     background: white;
     margin: auto;
     padding: 1em;
+    padding-top: 2em;
     overflow: scroll;
+    outline: 1px solid black;
 }
 
 .flyout .closer,
 .popup .closer {
-    right: 30px;
-    top: 1em;
+    height: 2em;
     border: none;
     outline: none;
     float: right;
@@ -187,14 +195,22 @@ h1, h2, h3, h4 {
     text-align: right;
 }
 
-.flyout .closer {
-    position: fixed;
-}
-
 .flyout .content-pane {
     margin: 1em auto;
     width: calc(100% - 55px);
     max-height: calc(100% - 55px);
+}
+
+.flyout .closer {
+    position: fixed;
+    right: 30px;
+    top: 1em;
+}
+
+.popup .closer {
+    position: relative;
+    right: 0;
+    top: -2em;
 }
 
 #alerts.popup .content-pane {
@@ -221,24 +237,25 @@ h1, h2, h3, h4 {
 
     .flyout {
         position: absolute;
-        top: calc(60px + 2em);
-        left: 1em;
-        width: 550px;
+        top: calc(60px);
+        left: calc(30px + 2em);
+        width: 450px;
         height: auto;
-        max-height: calc(100% - 150px);
+        max-height: calc(100% - 115px);
         background: transparent;
         overflow: auto;
-        border: solid #ccc;
+        outline: 1px solid black;
     }
-    .flyout .content-pane{
+
+    .flyout .content-pane {
         width: auto;
         height: auto;
         margin: 0;
         overflow: auto;
-        border: none;
+        outline: none;
     }
 
-    .flyout .closer{
+    .flyout .closer {
         display: none;
     }
 

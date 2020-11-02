@@ -1,7 +1,7 @@
+import {getPath} from './helper';
+
 const flyout = document.getElementById('flyout');
 const content = flyout.getElementsByClassName('content')[0];
-
-import {getPath} from './helper';
 
 function flyoutIsOpen(id) {
     return flyout.style.display === 'block' && flyout.getAttribute('data-content-id') === id;

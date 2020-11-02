@@ -1,13 +1,30 @@
-import './css/main.css';
 import {World} from './lib/world';
 import * as Menu from './lib/menu';
 import settings from './settings/pink-orange';
-import {showAlert} from './lib/alerts';
+import Alerts from './lib/alerts';
+import {openFullscreen} from './lib/helper';
 
-// Set up the scene.
-const world = new World(settings, () => {
-    Menu.init();
-    Menu.openMenu();
-}, () => {
-    showAlert(`<h2>Loading Failed!</h2><p>Please check your internet connection or try again later.</p>`);
+window.onerror = Alerts.onError;
+window.addEventListener("unhandledrejection", event => {
+  Alerts.showError(`UNHANDLED PROMISE REJECTION: ${event.reason.error ? event.reason.error : 'Unknown Error'}`);
 });
+//Alerts.showAlert('test');
+try {
+// Set up the scene.
+    Menu.init();
+    const world = new World(
+        settings,
+        () => {
+        },
+        (event: ErrorEvent) => {
+            event.preventDefault();
+            Alerts.showError(`
+        <h2>Loading / Initializing Model Failed.</h2>
+        <p>Please check your internet connection or hit refresh.</p>
+        <p>[${event.message}]</p>`
+            );
+        });
+} catch (e) {
+    Alerts.showError(e.toString());
+    throw(e);
+}

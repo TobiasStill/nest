@@ -1,64 +1,92 @@
-import {LightSettings, Settings} from '../settings/settings';
-import * as THREE from 'three';
-//import CameraControls from 'camera-controls';
+import {Settings} from '../settings/settings';
 import CruiseControls from './CruiseControls';
 
 import Stats from 'stats-js/src/Stats';
 import {PLYLoader} from 'three/examples/jsm/loaders/PLYLoader';
-import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader';
-import {hexEncodeColor, setAmbientLight, setLight} from './helper';
-import CruiseControls2 from './CruiseControls2';
+import {GLTF, GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader';
+import {DRACOLoader} from 'three/examples/jsm/loaders/DRACOLoader';
+import {setAmbientLight, setLight} from './helper';
 import Loader from './loader';
-import {hideAlert, showAlert} from './alerts';
-import model from '../model/ply/nest_full_LOD4.ply';
-// const model = require('../model/ply/nest_full_LOD4.ply');
+import Alerts from './alerts';
+
+import {
+    AmbientLight,
+    BufferGeometry,
+    Clock,
+    Color, GridHelper,
+    Group,
+    Mesh, MeshBasicMaterial, MeshLambertMaterial,
+    Object3D,
+    PerspectiveCamera, PointLight,
+    Scene, SphereGeometry, SpotLight,
+    Vector3,
+    WebGLRenderer
+} from 'three';
+
+// gltfpack GLB
+const model = './model/glb/nest_full_LOD4.glb';
+//import model from '../model/glb/nest_full_LOD2.glb';
+
+
+//draco GLTF
+//import model from '../model/glb/nest_full_LOD4.gltf';
+//import model from '../model/glb/nest_full_LOD2.gltf';
+
+// raw PLY
+//import model from '../model/ply/nest_full_LOD4.ply';
+
+// testing
 //import model from '../model/ply/Lucy100k.ply';
 //import model from '../model/ply/cube.ply';
 
 export class World {
-    private scene: THREE.Scene;
-    private mesh: THREE.Mesh;
+    private scene: Scene;
+    private mesh: Mesh | Group;
     private stats: Stats;
     private controls: CruiseControls;
-    private clock: THREE.Clock;
-    private camera: THREE.PerspectiveCamera;
-    private renderer: THREE.WebGLRenderer;
+    private clock: Clock;
+    private camera: PerspectiveCamera;
+    private renderer: WebGLRenderer;
     private WIDTH: number;
     private HEIGHT: number;
     private frame: number = 0;
 
-    constructor(private settings: Settings, private onModelLoad: () => void, private onModelReject: () => void) {
+    constructor(
+        private settings: Settings,
+        private onModelLoad: () => void,
+        private onModelReject: (event: ErrorEvent) => void) {
         this.WIDTH = window.innerWidth;
         this.HEIGHT = window.innerHeight;
-
-        // Create a renderer and add it to the DOM.
-        this.initRenderer();
         this.init();
     }
 
     private init() {
-        this.clock = new THREE.Clock();
+
+        this.clock = new Clock();
         // Create the scene and set the scene size.
-        this.scene = new THREE.Scene();
+        this.scene = new Scene();
 
-        // Create a camera, zoom it out from the model a bit, and add it to the scene.
-        this.initCamera();
+        Loader.loadGlb(model, (gltf: GLTF) => {
+            // Create a renderer and add it to the DOM.
+            this.initRenderer();
+            // Create a camera, zoom it out from the model a bit, and add it to the scene.
+            this.initCamera();
 
-        // this.addStats();
+            //this.addStats();
 
-        // add event listener on resize
-        this.addResizeListener();
+            // add event listener on resize
+            this.addResizeListener();
 
-        //this.addSpheres();
+            //this.addSpheres();
 
-        //this.addGridHelper();
+            //this.addGridHelper();
 
-        this.initLights();
+            this.initLights();
 
-        this.initControls();
-
-        this.loadPly(model, () => {
-            this.scene.background = new THREE.Color(this.settings.background);
+            this.initControls();
+            this.gltfOnLoad(gltf);
+            this.scene.background = new Color(this.settings.background);
+            //this.renderer.
             this.render();
             this.animate();
             this.onModelLoad();
@@ -67,16 +95,16 @@ export class World {
 
 
     private initCamera() {
-        this.camera = new THREE.PerspectiveCamera(45, this.WIDTH / this.HEIGHT, 0.1, 100000);
+        this.camera = new PerspectiveCamera(30, this.WIDTH / this.HEIGHT, 0.1, 10000);
         this.camera.position.set(0, 0, 100);
-        this.camera.lookAt(new THREE.Vector3(0, 0, 0));
+        this.camera.lookAt(new Vector3(0, 0, 0));
         this.scene.add(this.camera);
     }
 
     private initRenderer() {
-        this.renderer = new THREE.WebGLRenderer({alpha: true, antialias: true, powerPreference: 'high-performance'});
+        this.renderer = new WebGLRenderer({alpha: false, antialias: true, powerPreference: 'high-performance'});
         this.renderer.setSize(this.WIDTH, this.HEIGHT);
-        this.renderer.setPixelRatio(window.devicePixelRatio);
+        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 3));
         this.renderer.domElement.id = 'context';
         this.renderer.shadowMap.enabled = true;
         document.body.appendChild(this.renderer.domElement);
@@ -84,23 +112,25 @@ export class World {
     }
 
     private initControls() {
-        this.controls = new CruiseControls(this.camera, this.renderer.domElement);
-        //this.controls = new CruiseControls2(this.camera, this.scene, );
+        this.controls = new CruiseControls(
+            this.camera,
+            this.renderer.domElement
+        );
     }
 
     private initLights() {
         if (this.settings.ambient) {
-            const light = new THREE.AmbientLight();
+            const light = new AmbientLight();
             setAmbientLight(light, this.settings.ambient);
             this.scene.add(light);
         }
         if (this.settings.pointlight) {
-            const light = new THREE.PointLight();
+            const light = new PointLight();
             setLight(light, this.settings.pointlight);
             this.scene.add(light);
         }
         if (this.settings.spotlight) {
-            const light = new THREE.SpotLight();
+            const light = new SpotLight();
             setLight(light, this.settings.spotlight);
             this.scene.add(light);
         }
@@ -119,25 +149,25 @@ export class World {
 
     private addAddContextLostListener() {
         this.renderer.domElement.addEventListener('webglcontextlost', (event) => {
+            event.preventDefault();
             console.warn('context lost!');
-            showAlert(`
-                    <p><strong>WebGl Context Lost!</strong></p>
+            Alerts.showError(`
+                    <p><strong>WebGL Context Lost!</strong></p>
                     <p>Please wait for the application to recover or restart Browser.</p>
             `);
-            event.preventDefault();
         });
         this.renderer.domElement.addEventListener('webglcontextrestored', (event) => {
             console.warn('context restored!');
             this.WIDTH = window.innerWidth;
             this.HEIGHT = window.innerHeight;
             this.init();
-            hideAlert();
+            Alerts.hideAlert();
             event.preventDefault();
         });
     }
 
     private addGridHelper() {
-        const gridHelper = new THREE.GridHelper(50, 50);
+        const gridHelper = new GridHelper(50, 50);
         gridHelper.position.y = -1;
         this.scene.add(gridHelper);
     }
@@ -148,42 +178,32 @@ export class World {
         document.getElementById('stats').appendChild(this.stats.dom);
     }
 
-    private plyOnLoad(resolve: () => {}) {
-        return (geometry) => {
-            var material = new THREE.MeshLambertMaterial({
-                color: this.settings.mesh.color,
-            });
-            this.mesh = new THREE.Mesh(geometry, material);
-            this.mesh.matrixAutoUpdate = false;
-            this.mesh.castShadow = this.settings.mesh.castShadow;
-            this.mesh.receiveShadow = this.settings.mesh.receiveShadow;
-            this.scene.add(this.mesh);
-            this.render();
-            resolve();
-        }
+    private plyOnLoad(geometry: BufferGeometry) {
+        var material = new MeshLambertMaterial({
+            color: this.settings.mesh.color,
+        });
+        this.mesh = new Mesh(geometry, material);
+        this.mesh.matrixAutoUpdate = false;
+        this.mesh.castShadow = this.settings.mesh.castShadow;
+        this.mesh.receiveShadow = this.settings.mesh.receiveShadow;
+        this.scene.add(this.mesh);
+        this.render();
     };
 
-    private gltfOnLoad(resolve: () => {}) {
-        return (gltf) => {
-            this.mesh = <THREE.Mesh><unknown>gltf.scene; // Todo
-            this.mesh.matrixAutoUpdate = false;
-            this.mesh.castShadow = this.settings.mesh.castShadow;
-            this.mesh.receiveShadow = this.settings.mesh.receiveShadow;
-            (<THREE.MeshLambertMaterial>this.mesh.material).color.set(hexEncodeColor(this.settings.mesh.color)); //Todo
-            this.scene.add(this.mesh);
-            resolve();
-        }
+    private gltfOnLoad(gltf: GLTF) {
+        this.mesh = gltf.scene; // Todo
+        this.mesh.matrixAutoUpdate = false;
+        this.mesh.castShadow = this.settings.mesh.castShadow;
+        this.mesh.receiveShadow = this.settings.mesh.receiveShadow;
+        const material = new MeshLambertMaterial({color: this.settings.mesh.color});
+        this.mesh.traverse((obj: Object3D) => {
+            if (obj instanceof Mesh) {
+                obj.material = material;
+            }
+        });
+        this.scene.add(this.mesh);
     };
 
-    private loadPly(model: string, resolve, reject) {
-        var loader = new PLYLoader(Loader.initLoadingManager());
-        loader.load(model, this.plyOnLoad(resolve), Loader.onProgress, reject);
-    }
-
-    private loadGltf(model: string, resolve, reject) {
-        var loader = new GLTFLoader(Loader.initLoadingManager());
-        loader.load(model, this.gltfOnLoad(resolve), Loader.onProgress, reject);
-    }
 
     private addSpheres() {
 
@@ -191,9 +211,9 @@ export class World {
         for (var z = -1000; z < 1000; z += 10) {
 
             // Make a sphere (exactly the same as before).
-            var geometry = new THREE.SphereGeometry(0.5, 32, 32);
-            var material = new THREE.MeshBasicMaterial({color: 0x00ff00});
-            var spheres = new THREE.Mesh(geometry, material);
+            var geometry = new SphereGeometry(0.5, 32, 32);
+            var material = new MeshBasicMaterial({color: 0x00ff00});
+            var spheres = new Mesh(geometry, material);
 
             // This time we give the sphere random x and y positions between -500 and 500
             spheres.position.x = Math.random() * 1000 - 500;
@@ -218,7 +238,7 @@ export class World {
         if (updated) {
             //console.log('updated');
             this.render();
-            this.stats.update();
+            this.stats && this.stats.update();
         }
     }
 

@@ -6,10 +6,10 @@ const opener = menu.getElementsByClassName('opener')[0];
 const items = Array.from(nav.getElementsByTagName('li'));
 
 function menuIsOpen() {
-    return nav.style.display === 'block';
+    return nav.style.display !== 'none';
 }
 
-function closeMenu() {
+export function closeMenu() {
     nav.style.display = 'none';
     menu.classList.remove('open');
     closeFlyout();
@@ -19,7 +19,7 @@ function closeMenu() {
 }
 
 export function openMenu() {
-    nav.style.display = 'block';
+    nav.style.display = '';
     menu.classList.add('open');
 }
 
@@ -44,7 +44,6 @@ function toggleItem(contentId) {
 }
 
 export function init() {
-
     opener.addEventListener('click', (e: Event) => {
         e.preventDefault();
         e.stopPropagation();

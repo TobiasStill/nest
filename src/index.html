@@ -4,10 +4,11 @@
     <title>Nest</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <link rel="stylesheet" href="css/main.css"/>
 </head>
 <body style="margin: 0; overflow: hidden">
 <div id="background">
-    <img src="<%=require('./assets/startbild.jpg').default%>" style="min-width: 100%; min-height: 100%;"/>
+    <img src="./assets/startbild.jpg" style="min-width: 100%; min-height: 100%;"/>
 </div>
 <div class="loader" id="loader">
     <span class="spinner">
@@ -17,7 +18,7 @@
 <div id="stats"></div>
 <div id="menu" class="menu">
     <button class="opener"></button>
-    <nav style="display: none">
+    <nav style="display: inline-block">
         <ul>
             <li id="navi" data-content-id="navi_content">
                 <button>navi</button>
@@ -49,22 +50,26 @@
 <div id="flyout-content" style="display: none">
     <div id="navi_content">
         <h2>Navigation</h2>
-        <p>Maus:</p>
+        <h3>Maus:</h3>
         <ul>
             <li>Mausrad: Vorwärts / rückwärts</li>
             <li>Ziehen (Mustaste gedrückt): Schwenk, horizontal / vertikal</li>
         </ul>
-        <p>Touch:</p>
+        <h3>Touch:</h3>
         <ul>
             <li>Zwei-Finger Zoom: Vorwärts / rückwärts</li>
             <li>Berühren und ziehen: Schwenk, horizontal / vertikal</li>
         </ul>
-        <p>Tastatur:</p>
+        <h3>Tastatur:</h3>
         <ul>
             <li>[W]: Vorwärts</li>
             <li>[S]: Rückwärts</li>
-            <li>[A]: Links</li>
-            <li>[D]: Rechts</li>
+            <li>[A, &#x2190;]: Links</li>
+            <li>[D, &#x2192;]: Rechts</li>
+            <li>[R, &#x2191;]: Hoch</li>
+            <li>[F, &#x2193;]: Runter</li>
+            <li>[Q]: Rotieren, Uhrzeigersin</li>
+            <li>[E]: Rotieren, entgegen Uhrzeigersinn</li>
         </ul>
     </div>
     <div id="info_content">

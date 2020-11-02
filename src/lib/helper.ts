@@ -80,3 +80,8 @@ export function getPath(event: Event): EventTarget[] {
     }
 }
 
+export function openFullscreen(elem: HTMLElement) {
+  if (elem.requestFullscreen) {
+    elem.requestFullscreen().catch((e) => {console.error(e)});
+  }
+}
