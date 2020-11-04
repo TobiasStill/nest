@@ -1,8 +1,11 @@
-import {toggleFlyout, closeFlyout} from './flyout';
+import {getPath} from './helper';
 
+const flyout = document.getElementById('flyout');
+const flyoutContent = flyout.getElementsByClassName('content')[0];
 const menu = document.getElementById('menu');
 const nav = document.getElementsByTagName('nav')[0];
 const opener = menu.getElementsByClassName('opener')[0];
+
 const items = Array.from(nav.getElementsByTagName('li'));
 
 function menuIsOpen() {
@@ -13,9 +16,6 @@ export function closeMenu() {
     nav.style.display = 'none';
     menu.classList.remove('open');
     closeFlyout();
-    items.forEach((item) => {
-        item.classList.remove('active');
-    })
 }
 
 export function openMenu() {
@@ -60,3 +60,51 @@ export function init() {
     })
 }
 
+function flyoutIsOpen(id) {
+    return flyout.style.display === 'block' && flyout.getAttribute('data-content-id') === id;
+}
+
+function openFlyout(id) {
+    const source = document.getElementById(id);
+    if (source) {
+        //copy the source
+        flyoutContent.innerHTML = source.innerHTML;
+        // set id
+        flyout.setAttribute('data-content-id', id);
+        // open the flyout
+        flyout.style.display = 'block';
+    }
+}
+
+export function closeFlyout() {
+    flyout.style.display = 'none';
+    items.forEach((item) => {
+        item.classList.remove('active');
+    })
+}
+
+export function toggleFlyout(id): boolean {
+    if (flyoutIsOpen(id)) {
+        closeFlyout();
+        return false;
+    } else {
+        openFlyout(id);
+        return true;
+    }
+}
+
+// close flyout on outside click
+document.addEventListener('click', function (e: MouseEvent) {
+    var clickedOutside = true;
+    getPath(e).forEach(function (item) {
+        if (!clickedOutside) {
+            return;
+        }
+        if (item === flyout) {
+            clickedOutside = false;
+        }
+    });
+    if (clickedOutside) {
+        closeFlyout();
+    }
+});
