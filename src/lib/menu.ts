@@ -5,22 +5,10 @@ const flyoutContent = flyout.getElementsByClassName('content')[0];
 const menu = document.getElementById('menu');
 const nav = document.getElementsByTagName('nav')[0];
 const opener = menu.getElementsByClassName('opener')[0];
-
 const items = Array.from(nav.getElementsByTagName('li'));
 
 function menuIsOpen() {
     return nav.style.display !== 'none';
-}
-
-export function closeMenu() {
-    nav.style.display = 'none';
-    menu.classList.remove('open');
-    closeFlyout();
-}
-
-export function openMenu() {
-    nav.style.display = '';
-    menu.classList.add('open');
 }
 
 function toggleMenu() {
@@ -43,23 +31,6 @@ function toggleItem(contentId) {
     })
 }
 
-export function init() {
-    opener.addEventListener('click', (e: Event) => {
-        e.preventDefault();
-        e.stopPropagation();
-        toggleMenu();
-    });
-
-    items.forEach((item) => {
-        const contentId = item.getAttribute('data-content-id');
-        item.addEventListener('click', (e: Event) => {
-            e.preventDefault();
-            e.stopPropagation();
-            toggleItem(contentId)
-        });
-    })
-}
-
 function flyoutIsOpen(id) {
     return flyout.style.display === 'block' && flyout.getAttribute('data-content-id') === id;
 }
@@ -76,14 +47,14 @@ function openFlyout(id) {
     }
 }
 
-export function closeFlyout() {
+function closeFlyout() {
     flyout.style.display = 'none';
     items.forEach((item) => {
         item.classList.remove('active');
     })
 }
 
-export function toggleFlyout(id): boolean {
+function toggleFlyout(id): boolean {
     if (flyoutIsOpen(id)) {
         closeFlyout();
         return false;
@@ -93,18 +64,47 @@ export function toggleFlyout(id): boolean {
     }
 }
 
-// close flyout on outside click
-document.addEventListener('click', function (e: MouseEvent) {
-    var clickedOutside = true;
-    getPath(e).forEach(function (item) {
-        if (!clickedOutside) {
-            return;
-        }
-        if (item === flyout) {
-            clickedOutside = false;
+export function init() {
+    opener.addEventListener('click', (e: Event) => {
+        e.preventDefault();
+        e.stopPropagation();
+        toggleMenu();
+    });
+
+    items.forEach((item) => {
+        const contentId = item.getAttribute('data-content-id');
+        item.addEventListener('click', (e: Event) => {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleItem(contentId)
+        });
+    });
+
+    // close flyout on outside click
+    document.addEventListener('click', function (e: MouseEvent) {
+        var clickedOutside = true;
+        getPath(e).forEach(function (item) {
+            if (!clickedOutside) {
+                return;
+            }
+            if (item === flyout) {
+                clickedOutside = false;
+            }
+        });
+        if (clickedOutside) {
+            closeFlyout();
         }
     });
-    if (clickedOutside) {
-        closeFlyout();
-    }
-});
+
+}
+
+export function closeMenu() {
+    nav.style.display = 'none';
+    menu.classList.remove('open');
+    closeFlyout();
+}
+
+export function openMenu() {
+    nav.style.display = '';
+    menu.classList.add('open');
+}
