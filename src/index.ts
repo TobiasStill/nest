@@ -17,7 +17,6 @@ try {
         () => {
         },
         (event: ErrorEvent) => {
-            event.preventDefault();
             Alerts.showError(`
         <h2>Loading / Initializing Model Failed.</h2>
         <p>Please check your internet connection or hit refresh.</p>

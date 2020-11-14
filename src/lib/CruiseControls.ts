@@ -79,14 +79,32 @@ export default class CruiseControls {
 
     update(delta: number): boolean {
 
-        return this.updateMovement(delta) || this.updateRotation(delta) || this.updateDrag(delta) || this.updatePinch(delta);
+        const updated = this.updateMovement(delta) || this.updateRotation(delta) || this.updateDrag(delta) || this.updatePinch(delta);
+        const logPosition = () => {
+            const {x, y, z} = this.camera.position;
+            console.log(`camera position: x=${x}, y=${y}, z=${z}`);
+        };
+        const logQuaternion = () => {
+            const {x, y, z, w} = this.camera.quaternion;
+            console.log(`camera quaternion: x=${x}, y=${y}, z=${z}, w=${w}`);
+        };
+        const logTarget = () => {
+            const lookAtVector = new Vector3(0, 0, -1);
+            lookAtVector.applyQuaternion(this.camera.quaternion);
+            const {x, y, z} = lookAtVector;
+            console.log(`camera look-at: x=${x}, y=${y}, z=${z}`);
+        };
+        updated && logPosition();
+        updated && logQuaternion();
+        updated && logTarget();
+        return updated;
     };
 
     private updateMovement(delta: number): boolean {
         if (!(this.moveVector.x || this.moveVector.y || this.moveVector.z)) {
             return false;
         }
-        const moveMult = delta * 100 * this.getCurvedSpeed();
+        const moveMult = delta * 500 * this.getCurvedSpeed();
         //console.log(`delta: ${delta}`);
 
         this.camera.translateX(this.moveVector.x * moveMult);
@@ -176,8 +194,8 @@ export default class CruiseControls {
     };
 
     private updateDragVector(up: number, right: number) {
-        this.dragVector.x = (this.dragSpeed * -right);
-        this.dragVector.y = (this.dragSpeed * -up);
+        this.dragVector.x = (this.dragSpeed * 0.25 * -right);
+        this.dragVector.y = (this.dragSpeed * 0.25 * -up);
         //console.log('dragRotation:', [this.dragVector.x, this.dragVector.y, this.dragVector.z]);
         //this.onChange();
     };
@@ -282,7 +300,7 @@ export default class CruiseControls {
         this.updatePinchVector(distance);
     }
 
-        private onKeyDown(event: KeyboardEvent) {
+    private onKeyDown(event: KeyboardEvent) {
 
         switch (event.keyCode) {
 

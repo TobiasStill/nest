@@ -1,44 +1,29 @@
 import {Settings} from './settings';
 
 const settings: Settings = {
-  "background": "#cccccc",
-  "ambient": {
-    "color": "#ffd700"
-  },
+  "background": "#17fffd",
   "mesh": {
-    "castShadow": true,
-    "receiveShadow": true,
     "color": "#7f828c"
   },
   "spotlight": {
-    "color": "#ffffff",
+    "color": "#e1e1e1",
     "position": [
-      2000,
-      600,
-      450
+      -100,
+      -200,
+      -600
     ],
     "castShadow": true,
-    "intensity": 1.6,
-    "shadow_mapSize_width": 1024,
-    "shadow_mapSize_height": 1024,
-    "shadow_camera_near": 7000,
-    "shadow_camera_far": 7777,
-    "shadow_camera_fov": 7777
+    "intensity": 1.6
   },
   "pointlight": {
     "color": "#ffffff",
     "position": [
-      400,
-      1000,
-      400
+      -100,
+      -200,
+      -100
     ],
     "castShadow": true,
-    "intensity": 1.2,
-    "shadow_mapSize_width": 1024,
-    "shadow_mapSize_height": 1024,
-    "shadow_camera_near": 7000,
-    "shadow_camera_far": 7777,
-    "shadow_camera_fov": 7000
+    "intensity": 1
   }
 };
 

@@ -12,12 +12,10 @@ export interface LightSettings {
 
 export interface Settings {
     'background': string,
-    'ambient': {
+    'ambient'?: {
         'color': string
     },
     'mesh': {
-        'castShadow': boolean,
-        'receiveShadow': boolean,
         'color': string
     },
     'spotlight': LightSettings,

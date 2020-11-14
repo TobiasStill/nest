@@ -13,7 +13,7 @@ import {
     AmbientLight,
     BufferGeometry,
     Clock,
-    Color, GridHelper,
+    Color, Euler, GridHelper,
     Group,
     Mesh, MeshBasicMaterial, MeshLambertMaterial,
     Object3D,
@@ -25,23 +25,23 @@ import {
 
 // gltfpack GLB
 const model = './model/glb/nest_full_LOD4.glb';
-//import model from '../model/glb/nest_full_LOD2.glb';
+//const model = './model/glb/nest_full_LOD2.glb';
 
 
 //draco GLTF
-//import model from '../model/glb/nest_full_LOD4.gltf';
-//import model from '../model/glb/nest_full_LOD2.gltf';
+//const model = './model/glb/nest_full_LOD4.gltf';
+//const model = './model/glb/nest_full_LOD2.gltf';
 
 // raw PLY
-//import model from '../model/ply/nest_full_LOD4.ply';
+//const model = './model/ply/nest_full_LOD4.ply';
 
 // testing
 //import model from '../model/ply/Lucy100k.ply';
-//import model from '../model/ply/cube.ply';
+//const model = './model/ply/cube.ply';
 
 export class World {
     private scene: Scene;
-    private mesh: Mesh | Group;
+    private mesh: Mesh;
     private stats: Stats;
     private controls: CruiseControls;
     private clock: Clock;
@@ -65,6 +65,7 @@ export class World {
         this.clock = new Clock();
         // Create the scene and set the scene size.
         this.scene = new Scene();
+        this.animate = this.animate.bind(this);
 
         Loader.loadGlb(model, (gltf: GLTF) => {
             // Create a renderer and add it to the DOM.
@@ -72,7 +73,7 @@ export class World {
             // Create a camera, zoom it out from the model a bit, and add it to the scene.
             this.initCamera();
 
-            //this.addStats();
+            this.addStats();
 
             // add event listener on resize
             this.addResizeListener();
@@ -84,6 +85,7 @@ export class World {
             this.initLights();
 
             this.initControls();
+
             this.gltfOnLoad(gltf);
             this.scene.background = new Color(this.settings.background);
             //this.renderer.
@@ -96,8 +98,8 @@ export class World {
 
     private initCamera() {
         this.camera = new PerspectiveCamera(30, this.WIDTH / this.HEIGHT, 0.1, 10000);
-        this.camera.position.set(0, 0, 100);
-        this.camera.lookAt(new Vector3(0, 0, 0));
+        this.camera.position.set(0,0,550);
+        this.camera.lookAt(new Vector3(0,0,0));
         this.scene.add(this.camera);
     }
 
@@ -184,23 +186,22 @@ export class World {
         });
         this.mesh = new Mesh(geometry, material);
         this.mesh.matrixAutoUpdate = false;
-        this.mesh.castShadow = this.settings.mesh.castShadow;
-        this.mesh.receiveShadow = this.settings.mesh.receiveShadow;
         this.scene.add(this.mesh);
         this.render();
     };
 
     private gltfOnLoad(gltf: GLTF) {
-        this.mesh = gltf.scene; // Todo
-        this.mesh.matrixAutoUpdate = false;
-        this.mesh.castShadow = this.settings.mesh.castShadow;
-        this.mesh.receiveShadow = this.settings.mesh.receiveShadow;
-        const material = new MeshLambertMaterial({color: this.settings.mesh.color});
-        this.mesh.traverse((obj: Object3D) => {
+        gltf.scene.traverse((obj: Object3D) => {
             if (obj instanceof Mesh) {
-                obj.material = material;
+                this.mesh = obj;
             }
         });
+        const material = new MeshLambertMaterial({color: this.settings.mesh.color});
+        this.mesh.material = material;
+        this.mesh.rotateX(0.2);
+        this.mesh.rotateY(0.2);
+        this.mesh.rotateZ(0.3);
+        //this.mesh.matrixAutoUpdate = false;
         this.scene.add(this.mesh);
     };
 
@@ -233,7 +234,7 @@ export class World {
     // Renders the scene and updates the render as needed.
     private animate() {
         this.frame && cancelAnimationFrame(this.frame);
-        this.frame = requestAnimationFrame(this.animate.bind(this));
+        this.frame = requestAnimationFrame(this.animate);
         const updated = this.controls.update(this.clock.getDelta());
         if (updated) {
             //console.log('updated');

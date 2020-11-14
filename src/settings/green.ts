@@ -1,32 +1,26 @@
 import {Settings} from './settings';
 
 const settings: Settings = {
-    'background': '#000000',
+    'background': '#f2ff31',
     'mesh': {
-        'color': '#ba55d3'
-    },
-    'ambient': {
-        'color': '#ffc125'
+        'color': '#ffdc00'
     },
     'spotlight': {
-        'color': '#ffd700',
+        'color': '#d3ff23',
         'position': [
             450,
             450,
             450
         ],
-        'castShadow': true,
-        'intensity': 1.5,
+        'castShadow': true
     },
     'pointlight': {
-        'color': '#f34de9',
+        'color': '#0cad49',
         'position': [
             -100,
             100,
             200
-        ],
-        'castShadow': true,
-        'intensity': 1.5,
+        ]
     }
 };
 
