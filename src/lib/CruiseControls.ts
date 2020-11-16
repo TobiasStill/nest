@@ -84,19 +84,6 @@ export default class CruiseControls {
             const {x, y, z} = this.camera.position;
             console.log(`camera position: x=${x}, y=${y}, z=${z}`);
         };
-        const logQuaternion = () => {
-            const {x, y, z, w} = this.camera.quaternion;
-            console.log(`camera quaternion: x=${x}, y=${y}, z=${z}, w=${w}`);
-        };
-        const logTarget = () => {
-            const lookAtVector = new Vector3(0, 0, -1);
-            lookAtVector.applyQuaternion(this.camera.quaternion);
-            const {x, y, z} = lookAtVector;
-            console.log(`camera look-at: x=${x}, y=${y}, z=${z}`);
-        };
-        updated && logPosition();
-        updated && logQuaternion();
-        updated && logTarget();
         return updated;
     };
 

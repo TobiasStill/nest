@@ -1,8 +1,10 @@
-import {getPath} from './helper';
+import {getPath, toggleFullScreen} from './helper';
+import {WorldVariant, WorldVariants} from '../settings/settings';
 
 const flyout = document.getElementById('flyout');
 const flyoutContent = flyout.getElementsByClassName('content')[0];
 const menu = document.getElementById('menu');
+const variants = document.getElementById('variations');
 const nav = document.getElementsByTagName('nav')[0];
 const opener = menu.getElementsByClassName('opener')[0];
 const items = Array.from(nav.getElementsByTagName('li'));
@@ -64,6 +66,12 @@ function toggleFlyout(id): boolean {
     }
 }
 
+export function closeMenu() {
+    nav.style.display = 'none';
+    menu.classList.remove('open');
+    closeFlyout();
+}
+
 export function init() {
     opener.addEventListener('click', (e: Event) => {
         e.preventDefault();
@@ -96,15 +104,30 @@ export function init() {
         }
     });
 
-}
-
-export function closeMenu() {
-    nav.style.display = 'none';
-    menu.classList.remove('open');
-    closeFlyout();
+    //fullscreen
+    document.getElementById('fullscreen').addEventListener('click', function (e: MouseEvent) {
+        e.preventDefault();
+        e.stopPropagation();
+        toggleFullScreen();
+    });
 }
 
 export function openMenu() {
     nav.style.display = '';
     menu.classList.add('open');
+}
+
+export type onVariationChange = (v: WorldVariant) => void;
+
+export function initVariants(onChange: onVariationChange) {
+    variants.style.display = 'inline-block';
+    let currentVariant = 1;
+    variants.className = WorldVariants[currentVariant];
+    variants.addEventListener('click', (e: Event) => {
+        e.preventDefault();
+        e.stopPropagation();
+        onChange(WorldVariants[currentVariant]);
+        currentVariant = currentVariant + 1 >= WorldVariants.length ? 0 : currentVariant + 1;
+        variants.className = WorldVariants[currentVariant];
+    });
 }

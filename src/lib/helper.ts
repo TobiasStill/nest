@@ -12,27 +12,8 @@ export function setAmbientLight(light: AmbientLight, settings: { color: string }
 export function setLight(light: PointLight | SpotLight, settings: LightSettings) {
     light.color.set(hexEncodeColor(settings.color));
     light.position.set(...settings.position);
-    if (settings.castShadow) {
-        light.castShadow = settings.castShadow;
-    }
-    if (settings.intensity) {
-        light.intensity = settings.intensity;
-    }
-    if (settings.shadow_mapSize_width) {
-        light.shadow.mapSize.width = settings.shadow_mapSize_width;
-    }
-    if (settings.shadow_mapSize_height) {
-        light.shadow.mapSize.height = settings.shadow_mapSize_height;
-    }
-    if (settings.shadow_camera_near) {
-        light.shadow.camera.near = settings.shadow_camera_near;
-    }
-    if (settings.shadow_camera_far) {
-        light.shadow.camera.far = settings.shadow_camera_far;
-    }
-    if (settings.shadow_camera_fov) {
-        light.shadow.camera.fov = settings.shadow_camera_fov;
-    }
+    light.castShadow = settings.castShadow || false;
+    light.intensity = settings.intensity || 1;
 }
 
 export function setCookie(cname, cvalue, exdays) {
@@ -80,8 +61,12 @@ export function getPath(event: Event): EventTarget[] {
     }
 }
 
-export function openFullscreen(elem: HTMLElement) {
-  if (elem.requestFullscreen) {
-    elem.requestFullscreen().catch((e) => {console.error(e)});
+export function toggleFullScreen() {
+  if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen();
+  } else {
+    if (document.exitFullscreen) {
+      document.exitFullscreen();
+    }
   }
 }

@@ -1,8 +1,7 @@
 import {World} from './lib/world';
 import * as Menu from './lib/menu';
-import settings from './settings/pink-orange';
 import Alerts from './lib/alerts';
-import {openFullscreen} from './lib/helper';
+import {variants, WorldVariant, WorldVariants} from './settings/settings';
 
 window.onerror = Alerts.onError;
 window.addEventListener("unhandledrejection", event => {
@@ -13,8 +12,11 @@ try {
 // Set up the scene.
     Menu.init();
     const world = new World(
-        settings,
+        variants[WorldVariants[0]],
         () => {
+            Menu.initVariants((variant: WorldVariant) => {
+                world.applySettings(variants[variant]);
+            });
         },
         (event: ErrorEvent) => {
             Alerts.showError(`

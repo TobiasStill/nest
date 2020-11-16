@@ -7,3 +7,4 @@ src/model/glb
 src/model/ply
 dist
 .cache
+models

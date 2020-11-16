@@ -1,6 +1,6 @@
-import {Settings} from './settings';
+import {WorldSettings} from './settings';
 
-const settings: Settings = {
+const settings: WorldSettings = {
     'background': '#2056fd',
     'mesh': {
         'color': '#ffbecc'

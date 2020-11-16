@@ -1,4 +1,4 @@
-import {Settings} from '../settings/settings';
+import {WorldSettings} from '../settings/settings';
 import CruiseControls from './CruiseControls';
 
 import Stats from 'stats-js/src/Stats';
@@ -13,8 +13,7 @@ import {
     AmbientLight,
     BufferGeometry,
     Clock,
-    Color, Euler, GridHelper,
-    Group,
+    Color, GridHelper,
     Mesh, MeshBasicMaterial, MeshLambertMaterial,
     Object3D,
     PerspectiveCamera, PointLight,
@@ -24,8 +23,8 @@ import {
 } from 'three';
 
 // gltfpack GLB
-const model = './model/glb/nest_full_LOD4.glb';
-//const model = './model/glb/nest_full_LOD2.glb';
+//const model = './model/glb/nest_full_LOD4.glb';
+const model = './model/glb/nest_full_LOD2.glb';
 
 
 //draco GLTF
@@ -46,18 +45,29 @@ export class World {
     private controls: CruiseControls;
     private clock: Clock;
     private camera: PerspectiveCamera;
+    private ambientLight: AmbientLight;
+    private spotLight: SpotLight;
+    private pointLight: PointLight;
     private renderer: WebGLRenderer;
     private WIDTH: number;
     private HEIGHT: number;
     private frame: number = 0;
 
     constructor(
-        private settings: Settings,
+        private settings: WorldSettings,
         private onModelLoad: () => void,
         private onModelReject: (event: ErrorEvent) => void) {
         this.WIDTH = window.innerWidth;
         this.HEIGHT = window.innerHeight;
         this.init();
+    }
+
+    public applySettings(settings: WorldSettings) {
+        this.settings = settings;
+        this.scene.background = new Color(this.settings.background);
+        this.applyLightSettings(this.settings);
+        this.mesh.material = new MeshLambertMaterial({color: this.settings.mesh.color});
+        this.render();
     }
 
     private init() {
@@ -98,8 +108,8 @@ export class World {
 
     private initCamera() {
         this.camera = new PerspectiveCamera(30, this.WIDTH / this.HEIGHT, 0.1, 10000);
-        this.camera.position.set(0,0,550);
-        this.camera.lookAt(new Vector3(0,0,0));
+        this.camera.position.set(0, 0, 550);
+        this.camera.lookAt(new Vector3(0, 0, 0));
         this.scene.add(this.camera);
     }
 
@@ -120,22 +130,32 @@ export class World {
         );
     }
 
+    private applyLightSettings(settings: WorldSettings) {
+        if (settings.ambient) {
+            setAmbientLight(this.ambientLight, settings.ambient);
+        } else {
+            this.ambientLight.visible = false;
+        }
+        if (settings.pointlight) {
+            setLight(this.pointLight, settings.pointlight);
+        } else {
+            this.pointLight.visible = false;
+        }
+        if (settings.spotlight) {
+            setLight(this.spotLight, settings.spotlight);
+        } else {
+            this.spotLight.visible = false;
+        }
+    }
+
     private initLights() {
-        if (this.settings.ambient) {
-            const light = new AmbientLight();
-            setAmbientLight(light, this.settings.ambient);
-            this.scene.add(light);
-        }
-        if (this.settings.pointlight) {
-            const light = new PointLight();
-            setLight(light, this.settings.pointlight);
-            this.scene.add(light);
-        }
-        if (this.settings.spotlight) {
-            const light = new SpotLight();
-            setLight(light, this.settings.spotlight);
-            this.scene.add(light);
-        }
+        this.ambientLight = new AmbientLight();
+        this.spotLight = new SpotLight();
+        this.pointLight = new PointLight();
+        this.scene.add(this.ambientLight);
+        this.scene.add(this.spotLight);
+        this.scene.add(this.pointLight);
+        this.applyLightSettings(this.settings)
     }
 
     private addResizeListener() {
@@ -181,9 +201,7 @@ export class World {
     }
 
     private plyOnLoad(geometry: BufferGeometry) {
-        var material = new MeshLambertMaterial({
-            color: this.settings.mesh.color,
-        });
+        const material = new MeshLambertMaterial({color: this.settings.mesh.color});
         this.mesh = new Mesh(geometry, material);
         this.mesh.matrixAutoUpdate = false;
         this.scene.add(this.mesh);

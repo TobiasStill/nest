@@ -17,6 +17,14 @@ h1, h2, h3, h4 {
     font-size: 1em;
 }
 
+h3{
+    margin-bottom: 0;
+}
+
+h3 + p{
+    margin-top: 0;
+}
+
 #background {
     position: absolute;
     top: 0;
@@ -130,7 +138,7 @@ h1, h2, h3, h4 {
     border: 1px solid transparent;
     display: inline-block;
     line-height: 1.5em;
-    margin-left: 65px;
+    margin-left: 40px;
     vertical-align: middle;
     background-color: rgba(0, 0, 0, 0.5);
 }
@@ -143,7 +151,7 @@ h1, h2, h3, h4 {
 .menu li {
     list-style: none;
     display: block;
-    margin: 1em;
+    margin: 1em 1em 1em 2.5em;
 }
 
 .menu nav button {
@@ -157,6 +165,64 @@ h1, h2, h3, h4 {
 
 .menu .active button {
     color: yellow;
+}
+
+.menu #fullscreen,
+.menu #variations{
+    line-height: 100%;
+    vertical-align: middle;
+}
+
+.menu #fullscreen button,
+.menu #variations button{
+    padding: 0;
+}
+
+.menu #fullscreen img{
+    width: 25px;
+}
+
+.menu #variations button{
+    width: 30px;
+    height: 30px;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-size: 0;
+}
+
+.menu #variations svg {
+  fill: url(#gradient) #ccc;
+}
+
+.menu #variations.bw svg #gradient {
+  --color-stop: #fff;
+  --color-end: #000;
+}
+
+.menu #variations.green svg #gradient {
+  --color-stop: #23a100;
+  --color-end: #fffe00;
+}
+
+.menu #variations.pink-orange svg #gradient {
+  --color-stop: #ff62ec;
+  --color-end: #ffb706;
+}
+
+.menu #variations.polyester svg #gradient {
+  --color-stop: #1a1a54;
+  --color-end: #a4b6be;
+}
+
+.menu #variations.red svg #gradient {
+  --color-stop: #ff2700;
+  --color-end: #b93aff;
+}
+
+.menu #variations.sonne svg #gradient {
+  --color-stop: #ffd918;
+  --color-end: #ffb300;
 }
 
 .flyout,
@@ -207,6 +273,11 @@ h1, h2, h3, h4 {
     top: 1em;
 }
 
+.popup img,
+.flyout img{
+    max-width: 100%;
+}
+
 .popup .closer {
     position: relative;
     right: 0;
@@ -221,7 +292,7 @@ h1, h2, h3, h4 {
 
 @media screen and (min-width: 600px) {
     .menu > nav {
-        line-height: 60px;
+        line-height: 58px;
         margin-left: 30px;
         vertical-align: middle;
     }
@@ -237,9 +308,9 @@ h1, h2, h3, h4 {
 
     .flyout {
         position: absolute;
-        top: calc(60px);
+        top: 67px;
         left: calc(30px + 2em);
-        width: 450px;
+        width: 560px;
         height: auto;
         max-height: calc(100% - 115px);
         background: transparent;
