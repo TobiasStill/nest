@@ -17,11 +17,7 @@ h1, h2, h3, h4 {
     font-size: 1em;
 }
 
-h3{
-    margin-bottom: 0;
-}
-
-h3 + p{
+h3 + p {
     margin-top: 0;
 }
 
@@ -161,6 +157,7 @@ h3 + p{
     background: transparent;
     border: none;
     color: white;
+    padding: 0;
 }
 
 .menu .active button {
@@ -168,21 +165,21 @@ h3 + p{
 }
 
 .menu #fullscreen,
-.menu #variations{
+.menu #variations {
     line-height: 100%;
     vertical-align: middle;
 }
 
 .menu #fullscreen button,
-.menu #variations button{
+.menu #variations button {
     padding: 0;
 }
 
-.menu #fullscreen img{
+.menu #fullscreen img {
     width: 25px;
 }
 
-.menu #variations button{
+.menu #variations button {
     width: 30px;
     height: 30px;
     background: transparent;
@@ -192,37 +189,37 @@ h3 + p{
 }
 
 .menu #variations svg {
-  fill: url(#gradient) #ccc;
+    fill: url(#gradient) #ccc;
 }
 
 .menu #variations.bw svg #gradient {
-  --color-stop: #fff;
-  --color-end: #000;
+    --color-stop: #fff;
+    --color-end: #000;
 }
 
 .menu #variations.green svg #gradient {
-  --color-stop: #23a100;
-  --color-end: #fffe00;
+    --color-stop: #23a100;
+    --color-end: #fffe00;
 }
 
 .menu #variations.pink-orange svg #gradient {
-  --color-stop: #ff62ec;
-  --color-end: #ffb706;
+    --color-stop: #ff62ec;
+    --color-end: #ffb706;
 }
 
 .menu #variations.polyester svg #gradient {
-  --color-stop: #1a1a54;
-  --color-end: #a4b6be;
+    --color-stop: #1a1a54;
+    --color-end: #a4b6be;
 }
 
 .menu #variations.red svg #gradient {
-  --color-stop: #ff2700;
-  --color-end: #b93aff;
+    --color-stop: #ff2700;
+    --color-end: #b93aff;
 }
 
 .menu #variations.sonne svg #gradient {
-  --color-stop: #ffd918;
-  --color-end: #ffb300;
+    --color-stop: #ffd918;
+    --color-end: #ffb300;
 }
 
 .flyout,
@@ -246,7 +243,7 @@ h3 + p{
     margin: auto;
     padding: 1em;
     padding-top: 2em;
-    overflow: scroll;
+    overflow: auto;
     outline: 1px solid black;
 }
 
@@ -256,26 +253,39 @@ h3 + p{
     border: none;
     outline: none;
     float: right;
-    width: calc(100% - 45px);
     background: white;
     text-align: right;
+    width: 100%;
+    padding: 0;
 }
 
 .flyout .content-pane {
     margin: 1em auto;
     width: calc(100% - 55px);
-    max-height: calc(100% - 55px);
+    max-height: calc(100% - 65px);
 }
 
 .flyout .closer {
     position: fixed;
-    right: 30px;
-    top: 1em;
+    right: 2em;
+    top: 1.1em;
+    width: calc(100% - 4em);
 }
 
-.popup img,
-.flyout img{
+.flyout img,
+.popup img {
     max-width: 100%;
+}
+
+.flyout table th,
+.flyout table td {
+    padding: .5em;
+}
+
+.flyout table th {
+    width: 200px;
+    text-align: left;
+    background: #ccc;
 }
 
 .popup .closer {
@@ -287,10 +297,22 @@ h3 + p{
 #alerts.popup .content-pane {
     width: 300px;
     margin: 15% auto;
+    max-height: calc(100% - 30%);
 }
 
+@media screen and (max-width: 600px) {
+    .menu #fullscreen,
+    .menu #variations {
+        float: left;
+        width: auto;
+    }
 
-@media screen and (min-width: 600px) {
+    .menu #variations {
+        margin-left: 1em;
+    }
+}
+
+@media screen and (min-width: 601px) {
     .menu > nav {
         line-height: 58px;
         margin-left: 30px;
@@ -308,11 +330,11 @@ h3 + p{
 
     .flyout {
         position: absolute;
-        top: 67px;
-        left: calc(30px + 2em);
+        top: 110px;
+        left: calc(10px + 2em);
         width: 560px;
         height: auto;
-        max-height: calc(100% - 115px);
+        max-height: calc(100% - 150px);
         background: transparent;
         overflow: auto;
         outline: 1px solid black;
@@ -324,6 +346,7 @@ h3 + p{
         margin: 0;
         overflow: auto;
         outline: none;
+        max-height: 100%;
     }
 
     .flyout .closer {

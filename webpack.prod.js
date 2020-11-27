@@ -5,7 +5,8 @@ const common = require('./webpack.common.js');
 module.exports = merge(common, {
     mode: 'production',
     entry: './src/index.ts',
+    devtool: 'source-map',
     output: {
-        publicPath: './',
-    },
+        publicPath: './'
+    }
 });

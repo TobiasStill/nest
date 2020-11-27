@@ -78,12 +78,9 @@ export default class CruiseControls {
     }
 
     update(delta: number): boolean {
-
+        //console.log(`update: delta = ${delta}`);
+        delta = MathUtils.clamp(delta, 0, 0.3); // limit delta to 300 ms
         const updated = this.updateMovement(delta) || this.updateRotation(delta) || this.updateDrag(delta) || this.updatePinch(delta);
-        const logPosition = () => {
-            const {x, y, z} = this.camera.position;
-            console.log(`camera position: x=${x}, y=${y}, z=${z}`);
-        };
         return updated;
     };
 
@@ -91,12 +88,15 @@ export default class CruiseControls {
         if (!(this.moveVector.x || this.moveVector.y || this.moveVector.z)) {
             return false;
         }
-        const moveMult = delta * 500 * this.getCurvedSpeed();
-        //console.log(`delta: ${delta}`);
+        const factor = delta * 500 * this.getCurvedSpeed();
+        //console.log(`updateMovement: delta = ${delta}`);
+        //console.log(`updateMovement: factor = ${factor}`);
+        //console.log(`updateMovement: moveVector.z = ${this.moveVector.z}`);
+        //console.log(`updateMovement: distance = ${this.moveVector.z * factor}`);
 
-        this.camera.translateX(this.moveVector.x * moveMult);
-        this.camera.translateY(this.moveVector.y * moveMult);
-        this.camera.translateZ(this.moveVector.z * moveMult);
+        this.camera.translateX(this.moveVector.x * factor);
+        this.camera.translateY(this.moveVector.y * factor);
+        this.camera.translateZ(this.moveVector.z * factor);
 
         return true;
     };
@@ -136,9 +136,11 @@ export default class CruiseControls {
         if (this.pinchVector.z === 0) {
             return false;
         }
-        //console.log(`traveldistance: ${this.distance}`);
-        //console.log(`updateTravel: delta = ${delta}`);
         const factor = this.getCurvedSpeed() * delta * 100;
+        //console.log(`updatePinch: delta = ${delta}`);
+        //console.log(`updatePinch: factor = ${factor}`);
+        //console.log(`updatePinch: pinchVector.z = ${this.pinchVector.z}`);
+        //console.log(`updatePinch: distance = ${this.pinchVector.z * factor}`);
 
         this.camera.translateZ(this.pinchVector.z * factor);
         this.pinchVector.z = 0;

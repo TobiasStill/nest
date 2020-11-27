@@ -1,10 +1,10 @@
-import {WorldSettings} from '../settings/settings';
-import CruiseControls from './CruiseControls';
+import {WorldSettings} from '../world-settings';
+import CruiseControls from './cruise-controls';
 
 import Stats from 'stats-js/src/Stats';
-import {PLYLoader} from 'three/examples/jsm/loaders/PLYLoader';
-import {GLTF, GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader';
-import {DRACOLoader} from 'three/examples/jsm/loaders/DRACOLoader';
+//import {PLYLoader} from 'three/examples/jsm/loaders/PLYLoader';
+import {GLTF} from 'three/examples/jsm/loaders/GLTFLoader';
+//import {DRACOLoader} from 'three/examples/jsm/loaders/DRACOLoader';
 import {setAmbientLight, setLight} from './helper';
 import Loader from './loader';
 import Alerts from './alerts';
@@ -23,9 +23,8 @@ import {
 } from 'three';
 
 // gltfpack GLB
-//const model = './model/glb/nest_full_LOD4.glb';
-const model = './model/glb/nest_full_LOD2.glb';
-
+const model = './model/glb/nest_full_LOD4.glb';
+//const model = './model/glb/nest_full_LOD2.glb';
 
 //draco GLTF
 //const model = './model/glb/nest_full_LOD4.gltf';
@@ -83,7 +82,7 @@ export class World {
             // Create a camera, zoom it out from the model a bit, and add it to the scene.
             this.initCamera();
 
-            this.addStats();
+            //this.addStats();
 
             // add event listener on resize
             this.addResizeListener();

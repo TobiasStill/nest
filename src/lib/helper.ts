@@ -1,5 +1,5 @@
 import {AmbientLight, Color, PointLight, SpotLight} from 'three';
-import {LightSettings} from '../settings/settings';
+import {LightSettings} from '../world-settings';
 
 export function hexEncodeColor(str) {
     return new Color(str).getHex();

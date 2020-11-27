@@ -1,4 +1,4 @@
-import {WorldSettings} from './settings';
+import {WorldSettings} from './';
 
 const settings: WorldSettings = {
     'background': '#000000',

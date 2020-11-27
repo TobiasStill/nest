@@ -1,7 +1,7 @@
 import {World} from './lib/world';
 import * as Menu from './lib/menu';
 import Alerts from './lib/alerts';
-import {variants, WorldVariant, WorldVariants} from './settings/settings';
+import {variants, WorldVariant, WorldVariants} from './world-settings';
 
 window.onerror = Alerts.onError;
 window.addEventListener("unhandledrejection", event => {

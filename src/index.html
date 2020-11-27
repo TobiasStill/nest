@@ -5,6 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
     <link rel="stylesheet" href="./css/main.css"/>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=Array.from,Array.isArray,Array.prototype.filter,Array.prototype.find,Array.prototype.forEach,Array.prototype.indexOf,Array.prototype.keys,Array.prototype.lastIndexOf,Array.prototype.map,Array.prototype.sort,Array.prototype.values,ArrayBuffer,atob,Blob,console,CustomEvent,DataView,document,fetch,Float32Array,Float64Array,Function.prototype.bind,Int16Array,Int32Array,Int8Array,JSON,Map,Math.log2,Math.sign,Number.EPSILON,Number.isInteger,Number.MAX_SAFE_INTEGER,Object.assign,Object.create,Object.defineProperties,Object.defineProperty,Object.freeze,Object.keys,Object.values,Promise,requestAnimationFrame,Set,String.prototype.normalize,String.prototype.repeat,String.prototype.trim,Symbol,Symbol.toStringTag,TextDecoder,Uint16Array,Uint32Array,Uint8Array,Uint8ClampedArray,URL,WeakMap,WeakSet,XMLHttpRequest"></script>
 </head>
 <body style="margin: 0; overflow: hidden">
 <div id="background">
@@ -21,7 +22,7 @@
     <nav style="display: inline-block">
         <ul>
             <li id="navi" data-content-id="navi_content">
-                <button>navi</button>
+                <button>navigation</button>
             </li>
             <li id="info" data-content-id="info_content">
                 <button>info</button>
@@ -66,27 +67,79 @@
 <div id="flyout-content" style="display: none">
     <div id="navi_content">
         <h2>Navigation</h2>
-        <h3>Maus:</h3>
-        <ul>
-            <li>Mausrad: Vorwärts / rückwärts</li>
-            <li>Ziehen (Mustaste gedrückt): Schwenk, horizontal / vertikal</li>
-        </ul>
-        <h3>Touch:</h3>
-        <ul>
-            <li>Zwei-Finger Zoom: Vorwärts / rückwärts</li>
-            <li>Berühren und ziehen: Schwenk, horizontal / vertikal</li>
-        </ul>
-        <h3>Tastatur:</h3>
-        <ul>
-            <li>[W]: Vorwärts</li>
-            <li>[S]: Rückwärts</li>
-            <li>[A, &#x2190;]: Links</li>
-            <li>[D, &#x2192;]: Rechts</li>
-            <li>[R, &#x2191;]: Hoch</li>
-            <li>[F, &#x2193;]: Runter</li>
-            <li>[Q]: Rotieren, Uhrzeigersin</li>
-            <li>[E]: Rotieren, entgegen Uhrzeigersinn</li>
-        </ul>
+        <h3>Tastatur</h3>
+        <table>
+            <tr>
+                <th>[W]</th>
+                <td>Bewegung nach vorne</td>
+            </tr>
+            <tr>
+                <th>[S]</th>
+                <td>Bewegung nach hinten</td>
+            </tr>
+            <tr>
+                <th>[A]</th>
+                <td>Bewegung nach links</td>
+            </tr>
+            <tr>
+                <th>[D]</th>
+                <td>Bewegung nach rechts</td>
+            </tr>
+            <tr>
+                <th>[R]</th>
+                <td>Bewegung nach oben</td>
+            </tr>
+            <tr>
+                <th>[F]</th>
+                <td>Bewegung nach unten</td>
+            </tr>
+            <tr>
+                <th>[Q]</th>
+                <td>Rotieren im Uhrzeigersinn</td>
+            </tr>
+            <tr>
+                <th>[E]</th>
+                <td>Rotieren gegen den Uhrzeigersinn</td>
+            </tr>
+            <tr>
+                <th>[&#x2191;]</th>
+                <td>Schwenk nach oben</td>
+            </tr>
+            <tr>
+                <th>[&#x2193;]</th>
+                <td>Schwenk nach unten</td>
+            </tr>
+            <tr>
+                <th>[&#x2192;]</th>
+                <td>Schwenk nach rechts</td>
+            </tr>
+            <tr>
+                <th>[&#x2190;]</th>
+                <td>Schwenk nach links</td>
+            </tr>
+        </table>
+        <h3>Maus</h3>
+        <table>
+            <tr>
+                <th>Mausrad</th>
+                <td>Bewegung nach vorne und hinten</td>
+            </tr>
+            <tr>
+                <th>Ziehen (Maustaste gedrückt)</th>
+                <td>Schwenk nach links und rechts</td>
+            </tr>
+        </table>
+        <h3>Touch</h3>
+        <table>
+            <tr>
+                <th>Zoom (mit zwei Fingern)</th>
+                <td>Bewegung nach vorne und hinten</td>
+            </tr>
+            <tr>
+                <th>Ziehen</th>
+                <td>Schwenk nach links und rechts</td>
+            </tr>
+        </table>
     </div>
     <div id="info_content">
         <img src="./assets/Weaverbirds_at_West_Bengal.jpg"/>

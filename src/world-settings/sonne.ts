@@ -1,25 +1,27 @@
-import {WorldSettings} from './settings';
+import {WorldSettings} from './';
 
 const settings: WorldSettings = {
-    'background': '#f2ff31',
+    'background': '#3f63ff',
     'mesh': {
-        'color': '#ffdc00'
+        'color': '#ffb300'
     },
     'spotlight': {
-        'color': '#d3ff23',
+        'color': '#ecff00',
+                intensity: 0.5,
         'position': [
             100,
-            200,
-            1000
+            2000,
+            100
         ],
         'castShadow': true
     },
     'pointlight': {
-        'color': '#0cad49',
+        'color': '#ffb300',
+                intensity: 1.2,
         'position': [
             100,
             2000,
-            1000
+            200
         ]
     }
 };
