@@ -1,17 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Nest</title>
+    <title>Kerstin Stoll | Nest</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
     <link rel="stylesheet" href="./css/main.css"/>
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=Array.from,Array.isArray,Array.prototype.filter,Array.prototype.find,Array.prototype.forEach,Array.prototype.indexOf,Array.prototype.keys,Array.prototype.lastIndexOf,Array.prototype.map,Array.prototype.sort,Array.prototype.values,ArrayBuffer,atob,Blob,console,CustomEvent,DataView,document,fetch,Float32Array,Float64Array,Function.prototype.bind,Int16Array,Int32Array,Int8Array,JSON,Map,Math.log2,Math.sign,Number.EPSILON,Number.isInteger,Number.MAX_SAFE_INTEGER,Object.assign,Object.create,Object.defineProperties,Object.defineProperty,Object.freeze,Object.keys,Object.values,Promise,requestAnimationFrame,Set,String.prototype.normalize,String.prototype.repeat,String.prototype.trim,Symbol,Symbol.toStringTag,TextDecoder,Uint16Array,Uint32Array,Uint8Array,Uint8ClampedArray,URL,WeakMap,WeakSet,XMLHttpRequest"></script>
 </head>
 <body style="margin: 0; overflow: hidden">
 <div id="background">
     <img src="./assets/startbild.jpg" style="min-width: 100%; min-height: 100%;"/>
 </div>
-<div class="loader" id="loader">
+<div id="no-support">
+    <h1>Nicht unterstützter Browser</h1>
+    <p>Dieser Browser unterstützt keine aktuelle javaScript-Version. Die Anwendung kann nicht ausgeführt werden.</p>
+</div>
+<div id="model-selector" style="display: none">
+    <h1>Bitte wählen:</h1>
+</div>
+<div id="loader" class="loader">
     <span class="spinner">
     </span>
     <span class="percent"></span>
@@ -19,7 +25,7 @@
 <div id="stats"></div>
 <div id="menu" class="menu">
     <button class="opener"></button>
-    <nav style="display: inline-block">
+    <nav style="display: none">
         <ul>
             <li id="navi" data-content-id="navi_content">
                 <button>navigation</button>

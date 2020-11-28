@@ -13,14 +13,21 @@ import {
     AmbientLight,
     BufferGeometry,
     Clock,
-    Color, GridHelper,
-    Mesh, MeshBasicMaterial, MeshLambertMaterial,
+    Color,
+    GridHelper,
+    Mesh,
+    MeshBasicMaterial,
+    MeshLambertMaterial,
     Object3D,
-    PerspectiveCamera, PointLight,
-    Scene, SphereGeometry, SpotLight,
+    PerspectiveCamera,
+    PointLight,
+    Scene,
+    SphereGeometry,
+    SpotLight,
     Vector3,
     WebGLRenderer
 } from 'three';
+import {ModelInformation, ModelType} from '../model';
 
 // gltfpack GLB
 const model = './model/glb/nest_full_LOD4.glb';
@@ -54,10 +61,12 @@ export class World {
 
     constructor(
         private settings: WorldSettings,
-        private onModelLoad: () => void,
-        private onModelReject: (event: ErrorEvent) => void) {
+        private model: ModelInformation,
+        private onReady: () => void,
+        private onReject: (event: Error) => void) {
         this.WIDTH = window.innerWidth;
         this.HEIGHT = window.innerHeight;
+        this.animate = this.animate.bind(this);
         this.init();
     }
 
@@ -70,38 +79,68 @@ export class World {
     }
 
     private init() {
-
-        this.clock = new Clock();
-        // Create the scene and set the scene size.
-        this.scene = new Scene();
-        this.animate = this.animate.bind(this);
-
-        Loader.loadGlb(model, (gltf: GLTF) => {
+        const resolve = (mesh: Mesh) => {
+            this.clock = new Clock();
             // Create a renderer and add it to the DOM.
             this.initRenderer();
+            // Create the scene and set the scene size.
+            this.scene = new Scene();
+            this.setMesh(mesh);
             // Create a camera, zoom it out from the model a bit, and add it to the scene.
             this.initCamera();
-
             //this.addStats();
-
             // add event listener on resize
             this.addResizeListener();
-
             //this.addSpheres();
-
             //this.addGridHelper();
-
             this.initLights();
-
             this.initControls();
-
-            this.gltfOnLoad(gltf);
             this.scene.background = new Color(this.settings.background);
-            //this.renderer.
             this.render();
             this.animate();
-            this.onModelLoad();
-        }, this.onModelReject);
+            this.onReady();
+        };
+
+        const plyOnLoad = (geometry: BufferGeometry) => {
+            const mesh = new Mesh(geometry);
+            resolve(mesh);
+        };
+
+        const gltfOnLoad = (gltf: GLTF) => {
+            let mesh: Mesh;
+            gltf.scene.traverse((obj: Object3D) => {
+                if (obj instanceof Mesh) {
+                    mesh = obj;
+                }
+            });
+            resolve(mesh);
+        };
+
+        switch(this.model.type) {
+            case ModelType.gltf:
+            Loader.loadGltfDraco(this.model.url, gltfOnLoad, this.onReject);
+            break;
+            case ModelType.glb:
+            Loader.loadGlb(this.model.url, gltfOnLoad, this.onReject);
+            break;
+            case ModelType.ply:
+            Loader.loadPly(this.model.url, plyOnLoad, this.onReject);
+            break;
+            default:
+            this.onReject(new Error('unknown model type'))
+        }
+    }
+
+    private setMesh(mesh: Mesh) {
+        this.mesh = mesh;
+        const material = new MeshLambertMaterial({color: this.settings.mesh.color});
+        material.color.convertSRGBToLinear();
+        this.mesh.material = material;
+        this.mesh.rotateX(0.2);
+        this.mesh.rotateY(0.2);
+        this.mesh.rotateZ(0.3);
+        //this.mesh.matrixAutoUpdate = false;
+        this.scene.add(this.mesh);
     }
 
 
@@ -198,29 +237,6 @@ export class World {
         this.stats.showPanel(0);
         document.getElementById('stats').appendChild(this.stats.dom);
     }
-
-    private plyOnLoad(geometry: BufferGeometry) {
-        const material = new MeshLambertMaterial({color: this.settings.mesh.color});
-        this.mesh = new Mesh(geometry, material);
-        this.mesh.matrixAutoUpdate = false;
-        this.scene.add(this.mesh);
-        this.render();
-    };
-
-    private gltfOnLoad(gltf: GLTF) {
-        gltf.scene.traverse((obj: Object3D) => {
-            if (obj instanceof Mesh) {
-                this.mesh = obj;
-            }
-        });
-        const material = new MeshLambertMaterial({color: this.settings.mesh.color});
-        this.mesh.material = material;
-        this.mesh.rotateX(0.2);
-        this.mesh.rotateY(0.2);
-        this.mesh.rotateZ(0.3);
-        //this.mesh.matrixAutoUpdate = false;
-        this.scene.add(this.mesh);
-    };
 
 
     private addSpheres() {

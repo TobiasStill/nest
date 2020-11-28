@@ -1,5 +1,5 @@
 import {getPath, toggleFullScreen} from './helper';
-import {WorldVariant, WorldVariants} from '../world-settings/settings';
+import {WorldVariant, WorldVariants} from '../world-settings';
 
 const flyout = document.getElementById('flyout');
 const flyoutContent = flyout.getElementsByClassName('content')[0];

@@ -4,8 +4,17 @@ import {GLTF, GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader';
 import {DRACOLoader} from 'three/examples/jsm/loaders/DRACOLoader';
 import Alerts from './alerts';
 
-const htmlElement = document.getElementById('loader');
-const progress = htmlElement.getElementsByClassName('percent')[0];
+const el = document.getElementById('loader');
+const progress = el.getElementsByClassName('percent')[0];
+
+function show(){
+    el.style.display = 'inline-block';
+}
+
+function hide(){
+    el.style.display = 'none';
+}
+
 
 function onProgress(pe: ProgressEvent) {
     if (pe.lengthComputable) {
@@ -18,10 +27,11 @@ function initLoadingManager() {
     var manager = new LoadingManager();
     manager.onStart = function (url, itemsLoaded, itemsTotal) {
         console.log('Started loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.');
+        show();
     };
     manager.onLoad = function () {
         console.log('Loading complete!');
-        htmlElement.style.display = 'none';
+        hide();
     };
     manager.onProgress = function (url, itemsLoaded, itemsTotal) {
         console.log('Loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.');
@@ -29,6 +39,7 @@ function initLoadingManager() {
     manager.onError = function (url) {
         console.log('There was an error loading ' + url);
         Alerts.showError('There was an error loading ' + url);
+        hide();
     };
     return manager;
 }
@@ -56,5 +67,7 @@ export default {
     onProgress,
     loadPly,
     loadGltfDraco,
-    loadGlb
+    loadGlb,
+    show,
+    hide,
 }
