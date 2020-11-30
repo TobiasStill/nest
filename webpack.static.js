@@ -8,7 +8,7 @@ module.exports = {
             patterns: [
                 {from: 'src/index.html', to: './'},
                 {from: 'src/draco', to: 'public'},
-                {from: 'src/model', to: 'model'},
+                {from: 'src/model/glb', to: 'model/glb'},
                 {from: 'src/assets', to: 'assets'},
                 {from: 'src/css', to: 'css'},
             ],
