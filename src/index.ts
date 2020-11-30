@@ -18,7 +18,7 @@ try {
     Menu.init();
     const selector = new ModelSelector(
         document.getElementById('model-selector'),
-        [model.glbLow, model.glbMid, model.gltfLow, model.gltfMid],
+        [model.glbLow, model.glbMid],
         (model: ModelInformation) => {
         selector.hide();
         const world = new World(
