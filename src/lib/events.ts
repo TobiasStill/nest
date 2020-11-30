@@ -14,8 +14,12 @@ export type SomeTouch = Touch;
 
 const mouseWheelEvent = (/Firefox/i.test(navigator.userAgent)) ? 'DOMMouseScroll' : 'mousewheel';
 
-export namespace Events {
-    export const MouseWheel = {
+const getTouches = (evt: TouchEvent) => {
+    return evt.targetTouches;
+};
+
+export const Events = {
+    MouseWheel: {
         name: mouseWheelEvent,
         getDelta: (evt: SomeWheelEvent): TravelDistance => {
             let delta = evt.detail ? evt.detail * (-120) : evt.wheelDelta ? evt.wheelDelta : evt.deltaY;
@@ -23,9 +27,9 @@ export namespace Events {
             const distance = (evt.deltaMode === 1) ? delta / -window.devicePixelRatio : delta / (-window.devicePixelRatio * 10);
             return {distance};
         }
-    };
+    },
 
-    export const Pointer = {
+    Pointer: {
         getPosition: (evt: SomePointerEvent): PointerPosition => {
             let x = 0;
             let y = 0;
@@ -40,23 +44,21 @@ export namespace Events {
             }
             return {x, y};
         }
-    };
+    },
 
-    export const Touch = {
+    Touch: {
         getPosition: (touch: SomeTouch): PointerPosition => {
             let x = touch.pageX;
             let y = touch.pageY;
             return {x, y};
         },
-        getTouches(evt: TouchEvent) {
-            return evt.targetTouches;
-        },
+        getTouches,
         getTouch(evt: TouchEvent, i: number) {
-            const touches = Touch.getTouches(evt);
+            const touches = getTouches(evt);
             return touches[i];
         },
         isMultiTouch(evt: TouchEvent) {
-            return Touch.getTouches(evt).length > 1;
+            return getTouches(evt).length > 1;
         }
-    };
-}
+    }
+};

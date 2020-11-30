@@ -1,7 +1,9 @@
 const {merge} = require('webpack-merge');
-const common = require('./webpack.common.js');
+const static = require('./webpack.static.js');
+const es2015 = require('./webpack.es2015.js');
+const path = require('path');
 
-module.exports = merge(common, {
+module.exports = merge(es2015, static, {
     mode: 'development',
     devtool: 'inline-source-map',
     devServer: {
@@ -10,5 +12,10 @@ module.exports = merge(common, {
         port: 8080,
         disableHostCheck: true,
         contentBase: './dist',
+    },
+    output: {
+        filename: 'bundle.js',
+        path: path.resolve(__dirname, 'dist'),
+        publicPath: '/',
     }
 });

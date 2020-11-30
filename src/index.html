@@ -10,7 +10,7 @@
 <div id="background">
     <img src="./assets/startbild.jpg" style="min-width: 100%; min-height: 100%;"/>
 </div>
-<div id="no-support">
+<div id="no-support" style="display: none">
     <h1>Nicht unterstützter Browser</h1>
     <p>Dieser Browser unterstützt keine aktuelle javaScript-Version. Die Anwendung kann nicht ausgeführt werden.</p>
 </div>
@@ -252,5 +252,14 @@
         <img src="./assets/3D-LAB-490.gif" style="width:200px"/>
     </div>
 </div>
+<!-- Older browsers load this file (and module-supporting -->
+<!-- browsers know *not* to load this file). -->
+<script nomodule>
+    document.getElementById('no-support').style.display = 'block';
+</script>
+
+<!-- Browsers with ES module support load this file. -->
+<script type="module" src="./bundle.js"></script>
+
 </body>
 </html>
