@@ -18,13 +18,16 @@ const getTouches = (evt: TouchEvent) => {
     return evt.targetTouches;
 };
 
+const devicePixelRatio = window.devicePixelRatio || 1;
+
 export const Events = {
+    devicePixelRatio,
     MouseWheel: {
         name: mouseWheelEvent,
         getDelta: (evt: SomeWheelEvent): TravelDistance => {
             let delta = evt.detail ? evt.detail * (-120) : evt.wheelDelta ? evt.wheelDelta : evt.deltaY;
             //console.log(`delta = ${delta}`);
-            const distance = (evt.deltaMode === 1) ? delta / -window.devicePixelRatio : delta / (-window.devicePixelRatio * 10);
+            const distance = (evt.deltaMode === 1) ? delta / -devicePixelRatio : delta / (-devicePixelRatio * 10);
             return {distance};
         }
     },
@@ -48,8 +51,8 @@ export const Events = {
 
     Touch: {
         getPosition: (touch: SomeTouch): PointerPosition => {
-            let x = touch.pageX;
-            let y = touch.pageY;
+            let x = touch.pageX / devicePixelRatio;
+            let y = touch.pageY / devicePixelRatio;
             return {x, y};
         },
         getTouches,

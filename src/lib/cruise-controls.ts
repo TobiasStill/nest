@@ -136,7 +136,7 @@ export default class CruiseControls {
         if (this.pinchVector.z === 0) {
             return false;
         }
-        const factor = this.getCurvedSpeed() * delta * 100;
+        const factor = this.getCurvedSpeed() * delta * 500;
         //console.log(`updatePinch: delta = ${delta}`);
         //console.log(`updatePinch: factor = ${factor}`);
         //console.log(`updatePinch: pinchVector.z = ${this.pinchVector.z}`);
@@ -227,7 +227,7 @@ export default class CruiseControls {
             if (this.pinchEnd.length() === this.pinchStart.length()) {
                 return;
             }
-            const distance = MathUtils.clamp((this.pinchStart.y - this.pinchEnd.y) * 4, -30, 30);
+            const distance = MathUtils.clamp((this.pinchStart.y - this.pinchEnd.y), -30, 30);
             this.updatePinchVector(distance);
             //console.log(`onTouchMove: distance=${this.distance}`);
             this.pinchStart.copy(this.pinchEnd);
