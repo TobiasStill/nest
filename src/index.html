@@ -12,7 +12,7 @@
 </div>
 <div id="no-support" style="display: none">
     <h1>Nicht unterstützter Browser</h1>
-    <p>Dieser Browser unterstützt keine aktuelle javaScript-Version. Die Anwendung kann nicht ausgeführt werden.</p>
+    <p>Die JavaScript-Version dieses Browsers ist veraltet. Die Anwendung kann nicht ausgeführt werden.</p>
 </div>
 <div id="model-selector" style="display: none">
     <h1>Bitte wählen:</h1>
@@ -72,78 +72,78 @@
 </div>
 <div id="flyout-content" style="display: none">
     <div id="navi_content">
-        <h2>Navigation</h2>
+        <h2>NAVIGATION</h2>
         <h3>Tastatur</h3>
-        <table>
+        <table class="keyboard">
             <tr>
-                <th>[W]</th>
-                <td>Bewegung nach vorne</td>
+                <th>W</th>
+                <td>Bewegung nach <strong>vorne</strong></td>
             </tr>
             <tr>
-                <th>[S]</th>
-                <td>Bewegung nach hinten</td>
+                <th>S</th>
+                <td>Bewegung nach <strong>hinten</strong></td>
             </tr>
             <tr>
-                <th>[A]</th>
-                <td>Bewegung nach links</td>
+                <th>A</th>
+                <td>Bewegung nach <strong>links</strong></td>
             </tr>
             <tr>
-                <th>[D]</th>
-                <td>Bewegung nach rechts</td>
+                <th>D</th>
+                <td>Bewegung nach <strong>rechts</strong></td>
             </tr>
             <tr>
-                <th>[R]</th>
-                <td>Bewegung nach oben</td>
+                <th>R</th>
+                <td>Bewegung nach <strong>oben</strong></td>
             </tr>
             <tr>
-                <th>[F]</th>
-                <td>Bewegung nach unten</td>
+                <th>F</th>
+                <td>Bewegung nach <strong>unten</strong></td>
             </tr>
             <tr>
-                <th>[Q]</th>
-                <td>Rotieren im Uhrzeigersinn</td>
+                <th>Q</th>
+                <td>Rotieren <strong>im</strong> Uhrzeigersinn</td>
             </tr>
             <tr>
-                <th>[E]</th>
-                <td>Rotieren gegen den Uhrzeigersinn</td>
+                <th>E</th>
+                <td>Rotieren <strong>gegen</strong> den Uhrzeigersinn</td>
             </tr>
             <tr>
-                <th>[&#x2191;]</th>
-                <td>Schwenk nach oben</td>
+                <th>&#x2191;</th>
+                <td>Schwenk nach <strong>oben</strong></td>
             </tr>
             <tr>
-                <th>[&#x2193;]</th>
-                <td>Schwenk nach unten</td>
+                <th>&#x2193;</th>
+                <td>Schwenk nach <strong>unten</strong></td>
             </tr>
             <tr>
-                <th>[&#x2192;]</th>
-                <td>Schwenk nach rechts</td>
+                <th>&#x2192;</th>
+                <td>Schwenk nach <strong>rechts</strong></td>
             </tr>
             <tr>
-                <th>[&#x2190;]</th>
-                <td>Schwenk nach links</td>
+                <th>&#x2190;</th>
+                <td>Schwenk nach <strong>links</strong></td>
             </tr>
         </table>
         <h3>Maus</h3>
         <table>
             <tr>
                 <th>Mausrad</th>
-                <td>Bewegung nach vorne und hinten</td>
+                <td>Bewegung nach <strong>vorne</strong> und <strong>hinten</strong></td>
             </tr>
             <tr>
                 <th>Ziehen (Maustaste gedrückt)</th>
-                <td>Schwenk nach links und rechts</td>
+                <td>Schwenk, <strong>alle Richtungen</strong></td>
             </tr>
         </table>
         <h3>Touch</h3>
         <table>
             <tr>
                 <th>Zoom (mit zwei Fingern)</th>
-                <td>Bewegung nach vorne und hinten</td>
+                <td>Bewegung nach <strong>vorne</strong> und <strong>hinten</strong></td>
             </tr>
             <tr>
                 <th>Ziehen</th>
-                <td>Schwenk nach links und rechts</td>
+                <td>Schwenk, <strong>alle Richtungen</strong></td>
             </tr>
         </table>
     </div>
@@ -231,7 +231,7 @@
         <p>Für das komplexe 3D-Modell des Webervogelnestes wurde auch eine Visualisierung für eine VR-Brille entwickelt,
             welche erstmals im <a href="https://hdkv.de/ausstellungen/" target="_blank">Heidelberger Kunstverein</a> in
             der
-            <a href="http://www.kerstin-stoll.net/works/raumbluete" target="_blank">Ausstellung Raumblüte</a> gezeigt
+            <a href="http://www.kerstin-stoll.net/archiv/raumblute" target="_blank">Ausstellung Raumblüte</a> gezeigt
             wurde und dann bei der
             ‚Langen
             Nacht der Wissenschaften‘ an der TU Berlin.</p>
@@ -240,7 +240,7 @@
 
     </div>
     <div id="produktion_content">
-        <h2>Produktion</h2>
+        <h2>PRODUKTION</h2>
         <h3>Datenverarbeitung</h3>
         <p>Milan Mehner (3D-Labor des Instituts für Mathematik / TU Berlin)</p>
         <h3>Programmierung</h3>
@@ -256,6 +256,7 @@
 <!-- browsers know *not* to load this file). -->
 <script nomodule>
     document.getElementById('no-support').style.display = 'block';
+    document.getElementById('loader').style.display = 'none';
 </script>
 
 <!-- Browsers with ES module support load this file. -->

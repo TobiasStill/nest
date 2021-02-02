@@ -1,12 +1,12 @@
-import {ModelInformation, ModelUrl} from '../model';
+import {ModelProperties, ModelUrl} from '../model';
 
 export class ModelSelector {
     constructor(
         private el: HTMLElement,
-        models: ModelInformation[],
-        clickHandler: (url: ModelInformation) => void) {
+        models: ModelProperties[],
+        clickHandler: (url: ModelProperties) => void) {
 
-        function createButton(model: ModelInformation) {
+        function createButton(model: ModelProperties) {
             const button = document.createElement('button');
             button.textContent = model.description;
             button.onclick = () => {

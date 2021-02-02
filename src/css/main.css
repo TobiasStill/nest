@@ -1,6 +1,6 @@
 body {
     background: #000;
-    font-family: Courier, monospace;
+    font-family: Menlo, Courier, monospace;
     font-size: 13px;
     line-height: 19px;
     overflow: hidden;
@@ -9,7 +9,7 @@ body {
 }
 
 button, a {
-    font-family: Courier, monospace;
+    font-family: Menlo, Courier, monospace;
     font-size: 13px;
     line-height: 19px;
     cursor: pointer;
@@ -42,21 +42,27 @@ h3 + p {
     min-height: 100%;
 }
 
-
 #no-support,
 #model-selector {
-    margin: 100px auto;
-    max-width: 800px;
+    max-width: 300px;
     max-height: calc(100vh - 110px);
-    padding: 2em;
-    background: white;
+    margin: 150px calc(1em + 30px) 0 calc(1em + 30px);
+    color: white;
+}
+
+#no-support {
+    background: rgba(0, 0, 0, 0.5);
 }
 
 #model-selector button {
     display: block;
     width: 100%;
-    padding: 1em;
+    padding: 1em 0 1em 30px;
     margin: 1em 0;
+    background: #ffff00;
+    text-align: left;
+    border: none;
+    outline: none;
 }
 
 #context {
@@ -74,7 +80,7 @@ h3 + p {
 }
 
 .error {
-    color: red;
+    color: #852d1c;
 }
 
 .loader {
@@ -300,14 +306,23 @@ h3 + p {
 
 .flyout table th,
 .flyout table td {
-    padding: .5em;
+    padding: 1em 1.5em;
+}
+
+.flyout table td {
+    padding-left: 2em;
 }
 
 .flyout table th {
-    width: 200px;
+    width: 120px;
     text-align: left;
-    background: #ccc;
+    background: #ffff00;
 }
+
+.flyout table.keyboard th {
+    width: 1px;
+}
+
 
 .popup .closer {
     position: relative;
@@ -322,6 +337,11 @@ h3 + p {
 }
 
 @media screen and (max-width: 600px) {
+    #no-support,
+    #model-selector {
+        margin: 220px calc(1em + 40px) 0 calc(1em + 40px);
+    }
+
     .menu #fullscreen,
     .menu #variations {
         float: left;
@@ -377,5 +397,11 @@ h3 + p {
     .flyout:before,
     .flyout:after {
         display: none;
+    }
+
+    .flyout table th {
+        width: 200px;
+        text-align: left;
+        background: #ffff00;
     }
 }

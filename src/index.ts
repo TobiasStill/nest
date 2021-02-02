@@ -4,7 +4,7 @@ import Loader from './lib/loader';
 import Alerts from './lib/alerts';
 import {variants, WorldVariant, WorldVariants} from './world-settings';
 import {ModelSelector} from './lib/model-selector';
-import {ModelUrl, model, ModelInformation} from './model';
+import {ModelUrl, models, ModelProperties} from './model';
 
 document.getElementById('no-support').style.display = 'none';
 window.onerror = Alerts.onError;
@@ -18,8 +18,8 @@ try {
     Menu.init();
     const selector = new ModelSelector(
         document.getElementById('model-selector'),
-        [model.glbLow, model.glbMid],
-        (model: ModelInformation) => {
+        [models.glbLow, models.glbMid],
+        (model: ModelProperties) => {
         selector.hide();
         const world = new World(
             variants[WorldVariants[0]],

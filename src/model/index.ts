@@ -20,19 +20,19 @@ export enum ModelUrl {
     plyCube = './model/ply/cube.ply'
 }
 
-export interface ModelInformation {
+export interface ModelProperties {
     description: string;
     url: ModelUrl,
     type: ModelType
 }
 
-export type ModelSet = {
-    [m: string]: ModelInformation
+export type ModelCollection = {
+    [m: string]: ModelProperties
 }
 
-export const model: ModelSet = {
-    glbLow : {type: ModelType.glb, url: ModelUrl.glbLow,    description: 'GLB, niedrige Auflösung (52 MB)'},
-    glbMid : {type: ModelType.glb, url: ModelUrl.glbMid,    description: 'GLB, mittlere Auflösung (182 MB)'},
+export const models: ModelCollection = {
+    glbLow : {type: ModelType.glb, url: ModelUrl.glbLow,    description: 'niedrige Auflösung (~53 MB)'},
+    glbMid : {type: ModelType.glb, url: ModelUrl.glbMid,    description: 'mittlere Auflösung (~182 MB)'},
     gltfLow: {type: ModelType.gltf, url: ModelUrl.gltfLow,   description: 'GLTF, niedrige Auflösung, komprimiert (15 MB), nur für Desktop-Rechner mit ausreichendem Arbeitsspeicher geeignet'},
     gltfMid: {type: ModelType.gltf, url: ModelUrl.gltfMid,   description: 'GLTF, mittlere Auflösung, komprimiert (45 MB), nur für Desktop-Rechner mit ausreichendem Arbeitsspeicher geeignet'},
     plyLow : {type: ModelType.ply, url: ModelUrl.plyLow,    description: 'PLY, niedrige Auflösung (44 MB)'},

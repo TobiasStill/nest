@@ -27,7 +27,7 @@ import {
     Vector3,
     WebGLRenderer
 } from 'three';
-import {ModelInformation, ModelType} from '../model';
+import {ModelProperties, ModelType} from '../model';
 
 // gltfpack GLB
 const model = './model/glb/nest_full_LOD4.glb';
@@ -61,7 +61,7 @@ export class World {
 
     constructor(
         private settings: WorldSettings,
-        private model: ModelInformation,
+        private model: ModelProperties,
         private onReady: () => void,
         private onReject: (event: Error) => void) {
         this.WIDTH = window.innerWidth;
@@ -134,7 +134,6 @@ export class World {
     private setMesh(mesh: Mesh) {
         this.mesh = mesh;
         const material = new MeshLambertMaterial({color: this.settings.mesh.color});
-        material.color.convertSRGBToLinear();
         this.mesh.material = material;
         this.mesh.rotateX(0.2);
         this.mesh.rotateY(0.2);
@@ -212,8 +211,8 @@ export class World {
             event.preventDefault();
             console.warn('context lost!');
             Alerts.showError(`
-                    <p><strong>WebGL Context Lost!</strong></p>
-                    <p>Please wait for the application to recover or restart Browser.</p>
+                    <p><strong>WebGL-Kontext verloren.</strong></p>
+                    <p>Bitte Seite neu laden und wenn mgl. eine niederigere Auflösung wählen.</p>
             `);
         });
         this.renderer.domElement.addEventListener('webglcontextrestored', (event) => {
